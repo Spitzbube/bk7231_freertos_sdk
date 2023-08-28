@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW hub definitions.
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_HUB_H__
@@ -103,36 +103,35 @@ typedef struct
 /**
  *  MUSB_HubPortStatus As per 11.24.2.7 USB 2.0 specification.
  *
- *  @field wStaus Tells about present status of the port as per
+ *  @field wStaus Tells about present status of the port as per 
  *                MUSB_PortStatusBits.
- *
+ * 
  *  @field wStatusChange Tells about which status bits have been
  *                       changed in the HUB port as per MUSB_PortChangeBits.
  */
-typedef struct _MUSB_HubPortStatus_
+typedef struct _MUSB_HubPortStatus_ 
 {
-    uint16_t wStatus;
-    uint16_t wStatusChange;
+    uint16_t wStatus; //0
+    uint16_t wStatusChange; //2
+    //4
 } MUSB_HubPortStatus;
 
 /** Feature selector used in SET and CLEAR feature request for Hub. */
-typedef enum
-{
+typedef enum {
     MUSB_C_HUB_LOCAL_POWER_FEATURE          = 0x00,
     MUSB_C_HUB_OVER_CURRENT_FEATURE         = 0x01
-} MUSB_HubFeatureSelector;
+}MUSB_HubFeatureSelector;
 
 /** Feature selector used in SET and CLEAR feature request for Port. */
-typedef enum
-{
+typedef enum {
     /** Port connection */
-    MUSB_HUB_PORT_CONNECTION_FEATURE        = 0x0000,
+    MUSB_HUB_PORT_CONNECTION_FEATURE        = 0x0000, 
     /**  Port Enable     */
     MUSB_HUB_PORT_ENABLE_FEATURE            = 0x0001,
     /** Port suspended   */
     MUSB_HUB_PORT_SUSPEND_FEATURE           = 0x0002,
     /**  Over Current port basis */
-    MUSB_HUB_PORT_OVER_CURRENT_FEATURE      = 0x0003,
+    MUSB_HUB_PORT_OVER_CURRENT_FEATURE      = 0x0003,                 
     /** Port reset */
     MUSB_HUB_PORT_RESET_FEATURE             = 0x0004,
     /**  Power on state. */
@@ -143,17 +142,16 @@ typedef enum
     MUSB_HUB_C_PORT_CONNECTION_FEATURE      = 0x0010,
     MUSB_HUB_C_PORT_ENABLE_FEATURE          = 0x0011,
     MUSB_HUB_C_PORT_SUSPEND_FEATURE         = 0x0012,
-    MUSB_HUB_C_PORT_OVER_CURRENT_FEATURE    = 0x0013,
+    MUSB_HUB_C_PORT_OVER_CURRENT_FEATURE    = 0x0013,                 
     MUSB_HUB_C_PORT_RESET_FEATURE           = 0x0014,
     MUSB_HUB_PORT_TEST_FEATURE              = 0x0015,
     MUSB_HUB_PORT_INDICATOR_FEATURE         = 0x0016
-} MUSB_HubPortFeatureSelector;
+}MUSB_HubPortFeatureSelector;
 
 /**
  * MUSB_HubStatusBits (wStatus in MUSB_HubStatus As per 11.24.2.6 USB 2.0 specification.)
  */
-typedef enum
-{
+typedef enum {
     /** Local Power supply LOST */
     MUSB_HUB_LOCAL_POWER_SUPLY_LOST_BM    =  0x0001,
     /** Over current condition exists */
@@ -161,29 +159,28 @@ typedef enum
 } MUSB_HubStatusBits;
 
 /**
- * MUSB_HubChangeBits (wStatusChange in the MUSB_HubStatus As per 11.24.2.6 USB 2.0 specification).
+ * MUSB_HubChangeBits (wStatusChange in the MUSB_HubStatus As per 11.24.2.6 USB 2.0 specification). 
  */
-typedef enum
-{
+typedef enum {
     /** Local Power supply status Changed */
     MUSB_HUB_LOCAL_POWER_STATUS_CHANGED_BM  = 0x0001,
     /** Over current condition status changed */
     MUSB_HUB_OVER_CURRENT_STATUS_CHANGED_BM = 0x0002
 } MUSB_HubChangeBits;
 
-/** MUSB_PortStatusBits (wStatus in the MUSB_HubPortStatus
- *  As per 11.24.2.7.1 USB 2.0 specification).
+/** MUSB_PortStatusBits (wStatus in the MUSB_HubPortStatus 
+ *  As per 11.24.2.7.1 USB 2.0 specification). 
  */
 typedef enum
 {
     /**  Device is connected to the Hub's Port */
-    MUSB_HUB_PORT_CONNECTION_BM    = 0x0001,
+    MUSB_HUB_PORT_CONNECTION_BM    = 0x0001, 
     /**  Hub Port is Enable     */
     MUSB_HUB_PORT_ENABLE_BM        = 0x0002,
     /** Hub Port is suspended   */
     MUSB_HUB_PORT_SUSPEND_BM       = 0x0004,
     /**  When Port takes extra current. */
-    MUSB_HUB_PORT_OVER_CURRENT_BM  = 0x0008,
+    MUSB_HUB_PORT_OVER_CURRENT_BM  = 0x0008,                 
     /** When host resets the attached device.  */
     MUSB_HUB_PORT_RESET_BM         = 0x0010,
     /**  Power on state. */
@@ -199,24 +196,24 @@ typedef enum
 } MUSB_PortStatusBits;
 
 /**
- * wStatusChange in the MUSB_HubPortStatus structure.
- * As per 11.24.2.7.2 USB 2.0 specification.
+ * wStatusChange in the MUSB_HubPortStatus structure. 
+ * As per 11.24.2.7.2 USB 2.0 specification. 
  */
 typedef enum
 {
     /** Connect status changed i.e. either device is attached
-     * or detached.
+     * or detached. 
      */
     MUSB_HUB_C_PORT_CONNECTION_BM      = 0x0001,
     /** This bit set to 1 when port is disable */
     MUSB_HUB_C_PORT_ENABLE_BM          = 0x0002,
-    /** This indicates changes of suspend state of
-     *  the attached device
+    /** This indicates changes of suspend state of 
+     *  the attached device 
      */
     MUSB_HUB_C_PORT_SUSPEND_BM         = 0x0004,
     /** This field tells that over current indicator has changed.
      */
-    MUSB_HUB_C_PORT_OVER_CURRENT_BM    = 0x0008,
+    MUSB_HUB_C_PORT_OVER_CURRENT_BM    = 0x0008,                 
     /** This bit is set when RESET processing in this port is complete
      */
     MUSB_HUB_C_PORT_RESET_BM           = 0x0010

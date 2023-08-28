@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW DMA Controller Interface (DCI).
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_DCI_H__
@@ -35,7 +35,7 @@
  * (this is OS-specific, but may also be specific to a
  * DMA controller, intervening busses, and a target's capabilities,
  * so the UCD cannot make assumptions or provide services here)
- * <li>Handling the details of moving multiple USB packets
+ * <li>Handling the details of moving multiple USB packets 
  * in cooperation with the Inventra USB core.
  * <li>Knowing the correlation between channels and the
  * Inventra core's local endpoint resources and data direction,
@@ -81,7 +81,7 @@ typedef enum _MUSB_DmaChannelStatus
  */
 typedef struct
 {
-    void *pPrivateData;
+    void* pPrivateData;
     uint32_t dwMaxLength;
     uint32_t dwActualLength;
     MUSB_DmaChannelStatus bStatus;
@@ -95,7 +95,7 @@ typedef struct
  * @return TRUE on success
  * @return FALSE on failure (e.g. no DMAC appears present)
  */
-typedef uint8_t (*MUSB_pfDmaStartController)(void *pPrivateData);
+typedef uint8_t (*MUSB_pfDmaStartController)(void* pPrivateData);
 
 /**
  * Stop a DMA controller.
@@ -104,7 +104,7 @@ typedef uint8_t (*MUSB_pfDmaStartController)(void *pPrivateData);
  * @return TRUE on success
  * @return FALSE on failure; UCD may try again
  */
-typedef uint8_t (*MUSB_pfDmaStopController)(void *pPrivateData);
+typedef uint8_t (*MUSB_pfDmaStopController)(void* pPrivateData);
 
 /**
  * Allocate a DMA channel.
@@ -118,51 +118,51 @@ typedef uint8_t (*MUSB_pfDmaStopController)(void *pPrivateData);
  * @return a non-NULL pointer on success
  * @return NULL on failure (no channel available)
  */
-typedef MUSB_DmaChannel *(*MUSB_pfDmaAllocateChannel)(
-    void *pPrivateData, uint8_t bLocalEnd,
+typedef MUSB_DmaChannel* (*MUSB_pfDmaAllocateChannel)(
+    void* pPrivateData, uint8_t bLocalEnd, 
     uint8_t bTransmit, uint8_t bProtocol, uint16_t wMaxPacketSize);
 
 /**
  * Release a DMA channel.
  * Release a previously-allocated DMA channel.
  * The UCD guarantess to no longer reference this channel.
- * @param pChannel pointer to a channel obtained by
+ * @param pChannel pointer to a channel obtained by 
  * a successful call to MUSB_DmaAllocateChannel
  */
-typedef void (*MUSB_pfDmaReleaseChannel)(MUSB_DmaChannel *pChannel);
+typedef void (*MUSB_pfDmaReleaseChannel)(MUSB_DmaChannel* pChannel);
 
 /**
  * Allocate DMA buffer.
  * Allocate a buffer suitable for DMA operations with the given channel.
- * @param pChannel pointer to a channel obtained by
+ * @param pChannel pointer to a channel obtained by 
  * a successful call to MUSB_DmaAllocateChannel
  * @param dwLength length, in bytes, desired for the buffer
  * @return a non-NULL pointer to a suitable region (in processor space)
  * on success
  * @return NULL on failure
  */
-typedef uint8_t *(*MUSB_pfDmaAllocateBuffer)(MUSB_DmaChannel *pChannel,
-        uint32_t dwLength);
+typedef uint8_t* (*MUSB_pfDmaAllocateBuffer)(MUSB_DmaChannel* pChannel,
+					     uint32_t dwLength);
 
 /**
  * Release DMA buffer.
  * Release a DMA buffer previously acquiring by a successful call
  * to MUSB_DmaAllocateBuffer.
- * @param pChannel pointer to a channel obtained by
+ * @param pChannel pointer to a channel obtained by 
  * a successful call to MUSB_DmaAllocateChannel
  * @param pBuffer the buffer pointer
  * @return TRUE on success
  * @return FALSE on failure (e.g. the controller owns the buffer at present)
  */
-typedef uint8_t (*MUSB_pfDmaReleaseBuffer)(MUSB_DmaChannel *pChannel,
-        uint8_t *pBuffer);
+typedef uint8_t (*MUSB_pfDmaReleaseBuffer)(MUSB_DmaChannel* pChannel,
+					   uint8_t* pBuffer);
 
 /**
  * Program a DMA channel.
  * Program a DMA channel to move data at the core's request.
  * The local core endpoint and direction should already be known,
  * since they are specified in the AllocateChannel call.
- * @param pChannel pointer to a channel obtained by
+ * @param pChannel pointer to a channel obtained by 
  * a successful call to MUSB_DmaAllocateChannel
  * @param wPacketSize the packet size
  * @param bMode TRUE if mode 1; FALSE if mode 0
@@ -173,20 +173,20 @@ typedef uint8_t (*MUSB_pfDmaReleaseBuffer)(MUSB_DmaChannel *pChannel,
  * @return TRUE on success
  * @return FALSE on error
  */
-typedef uint8_t (*MUSB_pfDmaProgramChannel)(MUSB_DmaChannel *pChannel,
-        uint16_t wPacketSize, uint8_t bMode,
-        const uint8_t *pBuffer, uint32_t dwLength);
+typedef uint8_t (*MUSB_pfDmaProgramChannel)(MUSB_DmaChannel* pChannel, 
+					    uint16_t wPacketSize, uint8_t bMode,
+					    const uint8_t* pBuffer, uint32_t dwLength);
 
 /**
  * Get DMA channel status.
  * Get the current status of a DMA channel, if the hardware allows.
- * @param pChannel pointer to a channel obtained by
+ * @param pChannel pointer to a channel obtained by 
  * a successful call to MUSB_DmaAllocateChannel
- * @return current status
+ * @return current status 
  * (MUSB_DMA_STATUS_UNKNOWN if hardware does not have readable status)
  */
 typedef MUSB_DmaChannelStatus (*MUSB_pfDmaGetChannelStatus)(
-    MUSB_DmaChannel *pChannel);
+    MUSB_DmaChannel* pChannel);
 
 /**
  * DMA ISR.
@@ -194,7 +194,7 @@ typedef MUSB_DmaChannelStatus (*MUSB_pfDmaGetChannelStatus)(
  * This is necessary because with the built-in DMA controller
  * (and probably some other configurations),
  * the DMA interrupt is shared with other core interrupts.
- * Therefore, this function should return quickly
+ * Therefore, this function should return quickly 
  * when there is no DMA interrupt.
  * When there is a DMA interrupt, this function should
  * perform any implementations-specific operations,
@@ -206,13 +206,13 @@ typedef MUSB_DmaChannelStatus (*MUSB_pfDmaGetChannelStatus)(
  * @return TRUE if an interrupt was serviced
  * @return FALSE if no interrupt required servicing
  */
-typedef uint8_t (*MUSB_pfDmaControllerIsr)(void *pPrivateData);
+typedef uint8_t (*MUSB_pfDmaControllerIsr)(void* pPrivateData);
 
 /**
  * MUSB_DmaController.
  * A DMA Controller.
  * This is in a struct to allow the stack to support
- * multiple cores of different types,
+ * multiple cores of different types, 
  * since each may use a different type of DMA controller.
  * @field pPrivateData controller-private data;
  * not to be interpreted by the UCD
@@ -228,7 +228,7 @@ typedef uint8_t (*MUSB_pfDmaControllerIsr)(void *pPrivateData);
  */
 typedef struct
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfDmaStartController pfDmaStartController;
     MUSB_pfDmaStopController pfDmaStopController;
     MUSB_pfDmaAllocateChannel pfDmaAllocateChannel;
@@ -253,7 +253,7 @@ typedef struct
  * FALSE otherwise
  */
 typedef uint8_t (*MUSB_pfDmaChannelStatusChanged)(
-    void *pPrivateData, uint8_t bLocalEnd,
+    void* pPrivateData, uint8_t bLocalEnd, 
     uint8_t bTransmit);
 
 /**
@@ -278,22 +278,22 @@ typedef uint8_t (*MUSB_pfDmaChannelStatusChanged)(
  * It is assumed the DMA controller's base address will be related
  * to this in some way.
  * @return non-NULL pointer on success
- * @return NULL on failure (out of memory or exhausted
+ * @return NULL on failure (out of memory or exhausted 
  * a fixed number of controllers)
  */
-typedef MUSB_DmaController *(*MUSB_pfNewDmaController)(
+typedef MUSB_DmaController* (*MUSB_pfNewDmaController)(
     MUSB_pfDmaChannelStatusChanged pfDmaChannelStatusChanged,
-    void *pDmaPrivate,
+    void* pDmaPrivate,
     MUSB_pfSystemToBusAddress pfSystemToBusAddress,
-    void *pSystemPrivate,
-    uint8_t *pCoreBaseIsr,
-    uint8_t *pCoreBaseBsr);
+    void* pSystemPrivate,
+    uint8_t* pCoreBaseIsr, 
+    uint8_t* pCoreBaseBsr);
 
 /**
  * Destroy DMA controller.
  * Destroy a previously-instantiated DMA controller.
  */
-typedef void (*MUSB_pfDestroyDmaController)(MUSB_DmaController *pController);
+typedef void (*MUSB_pfDestroyDmaController)(MUSB_DmaController* pController);
 
 /**
  * MUSB_DmaControllerFactory.
@@ -312,25 +312,25 @@ typedef void (*MUSB_pfDestroyDmaController)(MUSB_DmaController *pController);
 typedef struct
 {
     uint16_t wCoreRegistersExtent;
-    MUSB_pfNewDmaController pfNewDmaController;
+    MUSB_pfNewDmaController pfNewDmaController; //4
     MUSB_pfDestroyDmaController pfDestroyDmaController;
 } MUSB_DmaControllerFactory;
 
 /************************* DCI FUNCTIONS **************************/
 
 /**
- * Set the DMA controller factory for use with all full-speed cores
+ * Set the DMA controller factory for use with all full-speed cores 
  * with the Mentor AHB bridge.
  * This must be called before MUSB_InitSystem.
  * @param pFactory pointer to a persistent DMA controller factory
  */
-extern void MUSB_SetFsAhbDmaControllerFactory(MUSB_DmaControllerFactory *pFactory);
+extern void MUSB_SetFsAhbDmaControllerFactory(MUSB_DmaControllerFactory* pFactory);
 
 /**
  * Set the DMA controller factory for use with all high-speed cores.
  * This must be called before MUSB_InitSystem.
  * @param pFactory pointer to a persistent DMA controller factory
  */
-extern void MUSB_SetHsDmaControllerFactory(MUSB_DmaControllerFactory *pFactory);
+extern void MUSB_SetHsDmaControllerFactory(MUSB_DmaControllerFactory* pFactory);
 
 #endif	/* multiple inclusion protection */

@@ -15,15 +15,17 @@
  * $Revision: 1.14 $
  */
 
+#pragma thumb
+
 #include "mu_impl.h"
-#include "mu_hsdcf.h"
+//#include "mu_hsdcf.h"
 #include "mu_diag.h"
 #include "mu_hdrdf.h"
 #include "mu_pippr.h"
 #include "mu_mem.h"
 
-#include "include.h"
-#include "mem_pub.h"
+//#include "include.h"
+//#include "mem_pub.h"
 
 /****************************** CONSTANTS ********************************/
 
@@ -127,7 +129,7 @@ static void MGC_HsDestroyDmaController(MUSB_DmaController *pController);
 
 /******************************* GLOBALS *********************************/
 
-MUSB_DmaControllerFactory MUSB_HdrcDmaControllerFactory =
+MUSB_DmaControllerFactory MUSB_HdrcDmaControllerFactory = //2349c020
 {
     0x300,
     MGC_HsNewDmaController,
@@ -455,6 +457,7 @@ static uint8_t MGC_HsDmaControllerIsr(void *pPrivateData)
 
 #endif	/* MUSB_HSDMA && have at least one channel */
 
+/* 234786be / - complete */
 static MUSB_DmaController *MGC_HsNewDmaController(
     MUSB_pfDmaChannelStatusChanged pfDmaChannelStatusChanged,
     void *pDmaPrivate,
@@ -492,6 +495,7 @@ static MUSB_DmaController *MGC_HsNewDmaController(
     return pResult;
 }
 
+/* 234786c2 / - complete */
 static void MGC_HsDestroyDmaController(MUSB_DmaController *pController)
 {
 #if defined(MUSB_DMA) && defined(MUSB_HSDMA) && (MUSB_HSDMA_CHANNELS > 0)

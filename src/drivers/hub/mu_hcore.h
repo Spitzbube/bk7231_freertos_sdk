@@ -33,8 +33,8 @@
 
 typedef struct _MUSB_HubChildPortMap_
 {
-    uint8_t bPortNum;
-    uint8_t bStatus;
+    uint8_t bPortNum; //0
+    uint8_t bStatus; //1
 } MUSB_HubChildPortMap;
 
 /**
@@ -50,10 +50,11 @@ typedef struct _MUSB_HubChildPortMap_
  */
 typedef struct
 {
-    uint32_t dwWaitingTime;
+    uint32_t dwWaitingTime; //0
     uint32_t dwIntermediateDelay;
-    uint8_t  bErrorCount;
-    MUSB_HubPortStatus   debouncePortStatus;
+    uint8_t  bErrorCount; //8
+    MUSB_HubPortStatus   debouncePortStatus; //0xa
+    //0x10?
 } MUSB_PortDebounceParam;
 
 
@@ -69,9 +70,10 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t dwNumOfTry;
-    uint32_t dwWaitingTime;
-    MUSB_HubPortStatus   resetPortStatus;
+    uint32_t dwNumOfTry; //0
+    uint32_t dwWaitingTime; //4
+    MUSB_HubPortStatus   resetPortStatus; //8
+    //0x0c = 12
 } MUSB_PortResetParam;
 
 
@@ -170,57 +172,57 @@ typedef struct
 typedef struct _MUSB_Hub_
 {
     void                                *pUcdPrivateData;
-    MUSB_BusHandle                       busHandle;
-    MUSB_Device                         *pUsbDevice;
+    MUSB_BusHandle                       busHandle; //4
+    MUSB_Device                         *pUsbDevice; //8
     MUSB_DeviceDriver *pDriver;
 
-    const MUSB_InterfaceDescriptor      *pInfDscr;
-    const MUSB_EndpointDescriptor       *pEndpDscr;
+    const MUSB_InterfaceDescriptor      *pInfDscr; //0x10
+    const MUSB_EndpointDescriptor       *pEndpDscr; //0x14
 
-    uint8_t                             aHubRawDscr[MUSB_HUB_MAX_HUB_DSCR_SIZE];
-    MUSB_HubDescriptor                        hubDscr;
+    uint8_t                             aHubRawDscr[MUSB_HUB_MAX_HUB_DSCR_SIZE]; //0x18
+    MUSB_HubDescriptor                        hubDscr; //0x27
 
-    MUSB_ControlIrp                     ctrlIrp;
-    MUSB_DeviceRequest                  setupPacket;
-    uint8_t                             aHubPortStatus[MUSB_HUB_PORT_STATUS_LENGTH];
+    MUSB_ControlIrp                     ctrlIrp; //0x34
+    MUSB_DeviceRequest                  setupPacket; //0x60
+    uint8_t                             aHubPortStatus[MUSB_HUB_PORT_STATUS_LENGTH]; //0x68
 
-    MUSB_HubPortStatus                  hubStatus;
-    MUSB_HubPortStatus                  portStatus;
+    MUSB_HubPortStatus                  hubStatus; //0x6c
+    MUSB_HubPortStatus                  portStatus; //0x70
 
     MUSB_Irp                            intrInIrp;
-    MUSB_PipePtr                           intrInPipe;
-    uint8_t                             aHubPortStatusChangeBuffer[(MUSB_HUB_MAX_PORTS / 8) + 1];
-    uint32_t                            dwHubPortStatusChange;
+    MUSB_Pipe                           intrInPipe; //0x94
+    uint8_t                             aHubPortStatusChangeBuffer[(MUSB_HUB_MAX_PORTS / 8) + 1]; //0x98
+    uint32_t                            dwHubPortStatusChange; //0x9c
 
-    MUSB_Device                         *pChild[MUSB_HUB_MAX_PORTS];
+    MUSB_Device                         *pChild[MUSB_HUB_MAX_PORTS]; //0xa0
     MUSB_HubChildPortMap                aHubChildPortMap[MUSB_HUB_MAX_PORTS];
 
-    MUSB_PortDebounceParam              debounceParam;
-    MUSB_PortResetParam                 resetParam;
+    MUSB_PortDebounceParam              debounceParam; //0xfc
+    MUSB_PortResetParam                 resetParam; //0x10c
 
-    uint8_t                             bNumOfChildActive;
+    uint8_t                             bNumOfChildActive; //0x118
 
-    uint8_t                             bState;
-    uint8_t                             bNextState;
+    uint8_t                             bState; //0x119
+    uint8_t                             bNextState; //0x11a
 
-    uint8_t                             bPortState;
-    uint8_t                             bPortNextState;
+    uint8_t                             bPortState; //0x11b
+    uint8_t                             bPortNextState; //0x11c
 
-    uint8_t                             bActivePortNum;
-    uint8_t                             bSpeed;
+    uint8_t                             bActivePortNum; //0x11d
+    uint8_t                             bSpeed; //0x11e
 
-    uint8_t                             bIndexAtHubDeviceList;
+    uint8_t                             bIndexAtHubDeviceList; //0x11f
 
-    uint8_t                             bAlternateSetting;
+    uint8_t                             bAlternateSetting; //0x120
 
-    int8_t                              bTtType;
-    uint8_t                             bSelfPower;
-    uint8_t                             bLocalPower;
-    uint8_t                             bAllocatedPower;
-    uint8_t                             bDepthInHubChain;
-    uint8_t                             bIntrIrpExecutionErrorCount;
-    uint8_t                             bCurrentChildIndex;
-
+    int8_t                              bTtType; //0x121
+    uint8_t                             bSelfPower; //0x122
+    uint8_t                             bLocalPower; //0x123
+    uint8_t                             bAllocatedPower; //0x124
+    uint8_t                             bDepthInHubChain; //0x125
+    uint8_t                             bIntrIrpExecutionErrorCount; //0x126
+    uint8_t                             bCurrentChildIndex; //0x127
+    //0x128
 } MUSB_Hub;
 
 /* Random value has taken  */
@@ -232,9 +234,9 @@ typedef struct
 {
 
     uint8_t    bRootHub;
-    MUSB_Hub   hubDeviceList[MUSB_HUB_MAX_HUB_SUPPORTED];
-    uint8_t    bNumOfHubActive;
-    MUSB_DeviceDriver *pDriver;
+    MUSB_Hub   hubDeviceList[MUSB_HUB_MAX_HUB_SUPPORTED]; //4
+    uint8_t    bNumOfHubActive; //0x6f4
+    MUSB_DeviceDriver *pDriver; //0x6f8
 
 } MUSB_HubDriverContext;
 

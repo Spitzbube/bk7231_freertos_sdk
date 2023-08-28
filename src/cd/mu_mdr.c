@@ -9,12 +9,17 @@
 *  LICENSORS AND IS SUBJECT TO LICENSE TERMS.                    *
 *                                                                *
 ******************************************************************/
-#include "include.h"
+//#include "include.h"
 #include "mu_impl.h"
 
-#if CFG_USB
+#pragma thumb
+
+#define MUSB_PRT
+
+
+#if 1 //CFG_USB
 #ifdef MUSB_MHDRC
-#include "hdrc_cnf.h"
+//#include "hdrc_cnf.h"
 #include "mu_diag.h"
 #include "mu_hdrpr.h"
 #include "mu_mdrpr.h"
@@ -27,8 +32,10 @@
 /*
  * Discover MHDRC FIFO configuration
  */
+/* 23479b2c - complete */
 uint8_t MGC_MhdrcInit(MGC_Port *pPort)
 {
+	char str[32] = "";
     uint8_t bResult;
     uint8_t bMajor;
     uint16_t wMinor;
@@ -44,6 +51,9 @@ uint8_t MGC_MhdrcInit(MGC_Port *pPort)
     bMajor = (wVersion & MGC_M_HWVERS_MAJOR) >> MGC_S_HWVERS_MAJOR;
     wMinor = (wVersion & MGC_M_HWVERS_MINOR);
     MUSB_DIAG2(2, "Core version is ", bMajor, ".", wMinor, 10, 0);
+
+    snprintf(str, 32, "%d.%d%s", bMajor, wMinor, (wVersion & 0x8000)? "RC": "");
+
     if((bMajor > 1) || ((1 == bMajor) && (wMinor >= 400)))
     {
         pPort->bHasDisablePing = TRUE;
@@ -296,6 +306,7 @@ MGC_EndpointResource *MGC_MhdrcBindEndpoint(MGC_Port *pPort,
 /*
 * Program the MHDRC to initiate reception.
 */
+/* 23479e6c - todo */
 uint32_t MGC_MhdrcStartRx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
                           uint8_t *pBuffer, uint32_t dwTotalBytes,
                           void *pCurrentIrp, uint8_t bAllowDma)
@@ -325,6 +336,15 @@ uint32_t MGC_MhdrcStartRx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
     uint8_t *pBase = (uint8_t *)pController->pControllerAddressIst;
     MUSB_SystemServices *pServices = pController->pSystemServices;
     uint8_t bEnd = pEnd->bLocalEnd;
+
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_MhdrcStartRx: dwTotalBytes=%d, bAllowDma=%d\r\n",
+				dwTotalBytes, bAllowDma);
+		console_send_string(debug_string);
+	}
+#endif
 
     MGC_SelectEnd(pBase, bEnd);
 
@@ -603,6 +623,7 @@ uint32_t MGC_MhdrcStartRx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
 /*
 * Program the MHDRC to initiate transmit.
 */
+/* 2347a27c - todo */
 uint32_t MGC_MhdrcStartTx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
                           const uint8_t *pBuffer, uint32_t dwTotalBytes,
                           void *pGenIrp)
@@ -637,7 +658,16 @@ uint32_t MGC_MhdrcStartTx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
 
     MGC_SelectEnd(pBase, bEnd);
 
+#if 1
     MUSB_PRT("[MGC] MhdrcStartTx:0x%x:0x%x:0x%x\r\n", dwTotalBytes, bEnd, pEnd->bBusEnd);
+#else
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "[MGC] MhdrcStartTx:0x%x:0x%x:0x%x\r\n", dwTotalBytes, bEnd, pEnd->bBusEnd);
+		console_send_string(debug_string);
+	}
+#endif
+
     if(pPort->bIsHost)
     {
         /* host mode; program protocol/speed and destination */
@@ -835,6 +865,8 @@ uint32_t MGC_MhdrcStartTx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
     return 0;
 }
 
+#if 0
+
 #if MUSB_DIAG > 0
 
 /*
@@ -856,6 +888,8 @@ int MGC_MhdrcDumpEndpoint(MGC_Controller *pController, MUSB_EndpointResource *pE
 }
 
 #endif	/* diagnostics enabled */
+
+#endif
 
 #endif	/* MHDRC enabled */
 #endif	/* CFG_USB */

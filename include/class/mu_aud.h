@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW audio class definitions.
- * $Revision: 1.2 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_AUD_H__

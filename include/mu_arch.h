@@ -14,7 +14,7 @@
  * MUSB-MicroSW handling of architecture-specific means to
  * define MUSB_SWAP16, MUSB_SWAP32, MGC_Read8, MGC_Read16,
  * MGC_Read32, MGC_Write8, MGC_Write16, and MGC_Write32.
- * $Revision: 1.9 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_ARCH_H__
@@ -27,14 +27,14 @@
  * Architecture-dependent definitions of low-level primitives
  * to perform actual controller register/FIFO accesses.
  *
- * These are only "first approximations" and may be overridden
+ * These are only "first approximations" and may be overridden 
  * in a platform-specific header (plat_arc.h) via #undef/#define,
  * since this really depends on how the controller is tied to
  * the processor.
  * <p>
- * For example, the core access macros assume a "straight" connection
+ * For example, the core access macros assume a "straight" connection 
  * to the processor's address lines.
- * If this is not true (e.g. a 32-bit RISC design omits A[1:0] so
+ * If this is not true (e.g. a 32-bit RISC design omits A[1:0] so 
  * 8-bit controller registers show up 4 bytes apart), override these
  * in your plat_arc.h to left-shift the offsets.
  */
@@ -93,8 +93,27 @@
 /* allow overrides of the above */
 #include "plat_arc.h"
 
+#ifdef BIG_ENDIAN
 /**
- * Swap the given 16-bit quantity from USB byte order (little-endian)
+ * Swap the given 16-bit quantity from USB byte order (little-endian) 
+ * to host byte order.
+ * @param _data the 16-bit quantity
+ * @return quantity in host byte order
+ */
+#define MUSB_SWAP16(_data) (((_data) << 8) | ((_data) >> 8))
+
+/**
+ * Swap the given 32-bit quantity from USB byte order (little-endian) 
+ * to host byte order.
+ * @param _data the 32-bit quantity
+ * @return quantity in host byte order
+ */
+#define MUSB_SWAP32(_data) ( ((_data) << 24) | ((_data) << 16) | ((_data) >> 24) | ((_data) >> 16) )
+
+#else
+
+/**
+ * Swap the given 16-bit quantity from USB byte order (little-endian) 
  * to host byte order.
  * @param _data the 16-bit quantity
  * @return quantity in host byte order
@@ -102,15 +121,17 @@
 #define MUSB_SWAP16(_data) _data
 
 /**
- * Swap the given 32-bit quantity from USB byte order (little-endian)
+ * Swap the given 32-bit quantity from USB byte order (little-endian) 
  * to host byte order.
  * @param _data the 32-bit quantity
  * @return quantity in host byte order
  */
 #define MUSB_SWAP32(_data) _data
 
+#endif	/* BIG_ENDIAN or not */
+
 /**
- * Swap the pointed-to 16-bit quantity from USB byte order (little-endian)
+ * Swap the pointed-to 16-bit quantity from USB byte order (little-endian) 
  * to host byte order, in an alignment-safe manner.
  * @param _pData pointer (as uint8_t*)
  * @return quantity in host byte order
@@ -118,7 +139,7 @@
 #define MUSB_SWAP16P(_pData) ((*(_pData+1) << 8) | *(_pData))
 
 /**
- * Swap the pointed-to 24-bit quantity from USB byte order (little-endian)
+ * Swap the pointed-to 24-bit quantity from USB byte order (little-endian) 
  * to host byte order, in an alignment-safe manner.
  * @param _pData pointer (as uint8_t*)
  * @return quantity in host byte order
@@ -126,7 +147,7 @@
 #define MUSB_SWAP24P(_pData) ((*(_pData+2) << 16) | (*(_pData+1) << 8) | *(_pData))
 
 /**
- * Swap the pointed-to 32-bit quantity from USB byte order (little-endian)
+ * Swap the pointed-to 32-bit quantity from USB byte order (little-endian) 
  * to host byte order, in an alignment-safe manner.
  * @param _pData pointer (as uint8_t*)
  * @return quantity in host byte order

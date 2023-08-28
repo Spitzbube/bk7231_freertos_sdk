@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW TTI (Transport Test Interface).
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_TTI_H__
@@ -20,13 +20,13 @@
 
 #include "mu_tools.h"
 
-/**
+/** 
  * Introduction to Transport Test Interface.
  */
 
 /************************* TTI CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_TtiTestType.
  * TTI Test Type.
  */
@@ -38,7 +38,7 @@ typedef enum
     MUSB_TTI_TYPE_LOOPBACK
 } MUSB_TtiTestType;
 
-/**
+/** 
  * MUSB_TtiTestOption.
  * TTI Test Option.
  */
@@ -76,24 +76,24 @@ typedef struct
     uint8_t bStartPattern;
     uint8_t bPacketCount;
 } MUSB_TtiTestSpec;
-
+ 
 /**
  * Test progress callback.
  */
-typedef void (*MUSB_pfTtiTestProgress)(MUSB_TtiTestSpec *pTestSpec);
+typedef void (*MUSB_pfTtiTestProgress)(MUSB_TtiTestSpec* pTestSpec);
 
 /**
  * Test error callback.
  */
-typedef void (*MUSB_pfTtiTestError)(MUSB_TtiTestSpec *pTestSpec,
-                                    uint32_t dwCdiStatus, uint32_t dwFailedCompareCount);
+typedef void (*MUSB_pfTtiTestError)(MUSB_TtiTestSpec* pTestSpec, 
+				    uint32_t dwCdiStatus, uint32_t dwFailedCompareCount);
 
 /**
  * Notification of status of test addition request.
  * @param pTestSpec pointer to test specification
  * @param hTest non-NULL test "handle" on successful addition; NULL on failure
  */
-typedef void (*MUSB_pfTtiTestAddStatus)(MUSB_TtiTestSpec *pTestSpec, void *hTest);
+typedef void (*MUSB_pfTtiTestAddStatus)(MUSB_TtiTestSpec* pTestSpec, void* hTest);
 
 /**
  * Add a test
@@ -103,10 +103,10 @@ typedef void (*MUSB_pfTtiTestAddStatus)(MUSB_TtiTestSpec *pTestSpec, void *hTest
  * @param pfTestProgress test progress callback; NULL for none
  * @param pfTestError test error callback; NULL for none
  */
-typedef void (*MUSB_pfTtiAddTest)(void *pDeviceData, MUSB_TtiTestSpec *pTestSpec,
-                                  MUSB_pfTtiTestAddStatus pfTestAddStatus,
-                                  MUSB_pfTtiTestProgress pfTestProgress,
-                                  MUSB_pfTtiTestError pfTestError);
+typedef void (*MUSB_pfTtiAddTest)(void* pDeviceData, MUSB_TtiTestSpec* pTestSpec, 
+				  MUSB_pfTtiTestAddStatus pfTestAddStatus,
+				  MUSB_pfTtiTestProgress pfTestProgress,
+				  MUSB_pfTtiTestError pfTestError);
 
 /**
  * Remove a test
@@ -114,7 +114,7 @@ typedef void (*MUSB_pfTtiAddTest)(void *pDeviceData, MUSB_TtiTestSpec *pTestSpec
  * @param hTest test "handle" from MUSB_pfTestAddStatus callback by MUSB_pfTtiAddTest
  * @see #MUSB_pfTtiAddTest
  */
-typedef void (*MUSB_pfTtiRemoveTest)(void *pDeviceData, void *hTest);
+typedef void (*MUSB_pfTtiRemoveTest)(void* pDeviceData, void* hTest);
 
 /**
  * Start tests
@@ -122,27 +122,27 @@ typedef void (*MUSB_pfTtiRemoveTest)(void *pDeviceData, void *hTest);
  * @param dwIterationCount number of iterations of the complete test suite
  * (0 => infinite)
  */
-typedef void (*MUSB_pfTtiStartTests)(void *pDeviceData, uint32_t dwIterationCount);
+typedef void (*MUSB_pfTtiStartTests)(void* pDeviceData, uint32_t dwIterationCount);
 
 /**
  * Stop tests
  * @param pDeviceData pPrivateData from dispatch table
  */
-typedef void (*MUSB_pfTtiStopTests)(void *pDeviceData);
+typedef void (*MUSB_pfTtiStopTests)(void* pDeviceData);
 
 /**
  * MUSB_TtiRunner.
  * Device driver callbacks (dispatch table).
- * @field pPrivateData device driver private data;
+ * @field pPrivateData device driver private data; 
  * not to be interpreted by the TTI implementation
  * @field pfTtiAddTest add-test callback
  * @field pfTtiRemoveTest remove-test callback
  * @field pfTtiStartTests start-tests callback
  * @field pfTtiStopTests stop-tests callback
  */
-typedef struct
+typedef struct 
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfTtiAddTest pfTtiAddTest;
     MUSB_pfTtiRemoveTest pfTtiRemoveTest;
     MUSB_pfTtiStartTests pfTtiStartTests;
@@ -155,18 +155,18 @@ typedef struct
  * Add a transport (test) device.
  * A transport device driver calls this to inform the TTI implementation
  * that a new test device is available.
- *
+ * 
  * @param pTestRunner pointer to struct with dispatch table to access the device
  */
-extern void MUSB_TtiAddTestRunner(MUSB_TtiRunner *pRunner);
+extern void MUSB_TtiAddTestRunner(MUSB_TtiRunner* pRunner);
 
 /**
  * Remove a transport (test) device.
  * A transport device driver calls this to inform the TTI implementation
  * that a test device is no longer available.
- *
+ * 
  * @param pTestRunner pointer to struct with dispatch table to access the device
  */
-extern void MUSB_TtiRemoveTestRunner(MUSB_TtiRunner *pRunner);
+extern void MUSB_TtiRemoveTestRunner(MUSB_TtiRunner* pRunner);
 
 #endif	/* multiple inclusion protection */

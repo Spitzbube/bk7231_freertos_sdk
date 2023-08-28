@@ -12,13 +12,13 @@
 
 /*
  * MUSB-MicroSW Image Transfer Interface (ITI).
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_ITI_H__
 #define __MUSB_ITI_H__
 
-/**
+/** 
  * Introduction to Image Transfer Interface.
  * The functions herein can be implemented by an OS to allow
  * the Mentor USB PTP/DSC/Pict-Bridge driver to be hooked into the OS'
@@ -27,7 +27,7 @@
  * The callbacks herein are implemented by the Mentor driver,
  * exposing the functionality needed by an OS to use the device.
  * The above could also be applied to a custom, non-OS environment.
- * Finally, an implementation can be created solely for demonstration purposes
+ * Finally, an implementation can be created solely for demonstration purposes 
  * (to avoid relying on platforms with live media support,
  * and/or to allow the Mentor USB driver to be tested).
  */
@@ -41,7 +41,7 @@
 /** Maximum number of Unicode characters returned in image names */
 #define MUSB_ITI_MAX_IMAGE_NAME   31
 
-/**
+/** 
  * MUSB_ItiDeviceType.
  * ITI Device Type.
  */
@@ -55,7 +55,7 @@ typedef enum
     MUSB_ITI_DEVICE_PICTURE_SINK
 } MUSB_ItiDeviceType;
 
-/**
+/** 
  * MUSB_ItiFormat.
  * ITI format.
  */
@@ -115,7 +115,7 @@ typedef enum
     MUSB_ITI_FORMAT_EXE
 } MUSB_ItiFormat;
 
-/**
+/** 
  * MUSB_ItiStatus.
  * ITI Operation Status.
  */
@@ -134,19 +134,19 @@ typedef enum
 /*************************** ITI TYPES ****************************/
 
 /** Handle created by the ITI client */
-typedef void *MUSB_ItiClientHandle;
+typedef void* MUSB_ItiClientHandle;
 
 /** Handle to an ITI device */
-typedef void *MUSB_ItiDeviceHandle;
+typedef void* MUSB_ItiDeviceHandle;
 
 typedef struct
 {
-    uint16_t wYear;
-    uint8_t bMonth;
-    uint8_t bDay;
-    uint8_t bHour;
-    uint8_t bMinute;
-    uint8_t bSecond;
+	uint16_t wYear;
+	uint8_t bMonth;
+	uint8_t bDay;
+	uint8_t bHour;
+	uint8_t bMinute;
+	uint8_t bSecond;
 } MUSB_ItiDateTime;
 
 /**
@@ -158,9 +158,9 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t dwWidth;
-    uint32_t dwHeight;
-    uint32_t dwBitDepth;
+	uint32_t dwWidth;
+	uint32_t dwHeight;
+	uint32_t dwBitDepth;
 } MUSB_ItiDimensions;
 
 /**
@@ -174,10 +174,10 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t dwHandle;
-    uint16_t wFolderCount;
-    uint16_t wImageCount;
-    uint16_t awName[MUSB_ITI_MAX_FOLDER_NAME + 1];
+	uint32_t dwHandle;
+	uint16_t wFolderCount;
+	uint16_t wImageCount;
+	uint16_t awName[MUSB_ITI_MAX_FOLDER_NAME+1];
 } MUSB_ItiFolderInfo;
 
 /**
@@ -195,19 +195,19 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t dwHandle;
-    uint32_t dwCompressedSize;
-    MUSB_ItiDateTime CreationTime;
-    MUSB_ItiDateTime ModificationTime;
-    MUSB_ItiDimensions Dimensions;
-    uint16_t awName[MUSB_ITI_MAX_IMAGE_NAME + 1];
-    MUSB_ItiFormat Format;
+	uint32_t dwHandle;
+	uint32_t dwCompressedSize;
+	MUSB_ItiDateTime CreationTime;
+	MUSB_ItiDateTime ModificationTime;
+	MUSB_ItiDimensions Dimensions;
+	uint16_t awName[MUSB_ITI_MAX_IMAGE_NAME+1];
+	MUSB_ItiFormat Format;
 } MUSB_ItiImageInfo;
 
 /**
  * @field hDevice handle to pass to service functions
  * @field awVendorName
- * @field aImageFormats
+ * @field aImageFormats 
  * @field wType bitmask formed by shifting 1's left by MUSB_ItiDeviceType values
  * @field wVendorId USB vendor ID, for client's use in generating a device name
  * @field wProductId USB product ID, for client's use in generating a device name
@@ -216,14 +216,14 @@ typedef struct
  */
 typedef struct
 {
-    MUSB_ItiDeviceHandle hDevice;
-    const uint16_t *awVendorName;
-    const uint16_t *awModelName;
-    const uint16_t *awVersionName;
-    const uint16_t *awSerialNumber;
-    const MUSB_ItiFormat *aCaptureFormats;
-    const MUSB_ItiFormat *aImageFormats;
-    uint16_t wType;
+	MUSB_ItiDeviceHandle hDevice;
+	const uint16_t* awVendorName;
+	const uint16_t* awModelName;
+	const uint16_t* awVersionName;
+	const uint16_t* awSerialNumber;
+	const MUSB_ItiFormat* aCaptureFormats;
+	const MUSB_ItiFormat* aImageFormats;
+	uint16_t wType;
     uint16_t wVendorId;
     uint16_t wProductId;
     uint16_t bcdDevice;
@@ -240,17 +240,17 @@ typedef struct
  * device; this handle is passed to the client's other handlers
  */
 typedef MUSB_ItiClientHandle (*MUSB_pfItiDeviceAddHandler)(
-    const MUSB_ItiDeviceInfo *pDeviceInfo);
+	const MUSB_ItiDeviceInfo* pDeviceInfo);
 
 /**
  * Callback to an ITI client to notify it of ITI device removal
  * @param hClient the "handle" returned by the client's device-add handler
- * for this device
+ * for this device 
  * @param pDeviceInfo pointer to device information struct
  */
 typedef void (*MUSB_pfItiDeviceRemoveHandler)(
-    MUSB_ItiClientHandle hClient,
-    const MUSB_ItiDeviceInfo *pDeviceInfo);
+	MUSB_ItiClientHandle hClient,
+	const MUSB_ItiDeviceInfo* pDeviceInfo);
 
 /**
  * MUSB_ItiClient.
@@ -260,8 +260,8 @@ typedef void (*MUSB_pfItiDeviceRemoveHandler)(
  */
 typedef struct
 {
-    MUSB_pfItiDeviceAddHandler pfDeviceAddHandler;
-    MUSB_pfItiDeviceRemoveHandler pfDeviceRemoveHandler;
+	MUSB_pfItiDeviceAddHandler pfDeviceAddHandler;
+	MUSB_pfItiDeviceRemoveHandler pfDeviceRemoveHandler;
 } MUSB_ItiClient;
 
 /************************* ITI FUNCTIONS **************************/
@@ -270,7 +270,7 @@ typedef struct
  * Register the ITI client
  * @param pClient pointer to client struct
  */
-extern void MUSB_ItiRegisterClient(MUSB_ItiClient *pClient);
+extern void MUSB_ItiRegisterClient(MUSB_ItiClient* pClient);
 
 /**
  * Unregister any known ITI client
@@ -284,8 +284,8 @@ extern void MUSB_ItiUnregisterClient(void);
  * @return status code
  */
 extern MUSB_ItiStatus MUSB_CountTopFolders(
-    MUSB_ItiDeviceHandle hDevice, uint16_t *pwCount);
-
+	MUSB_ItiDeviceHandle hDevice, uint16_t* pwCount);
+	
 /**
  * Get the number of top-level images
  * @param hDevice device handle from info passed to device-add handler
@@ -293,7 +293,7 @@ extern MUSB_ItiStatus MUSB_CountTopFolders(
  * @return status code
  */
 extern MUSB_ItiStatus MUSB_CountTopImages(
-    MUSB_ItiDeviceHandle hDevice, uint16_t *pwCount);
+	MUSB_ItiDeviceHandle hDevice, uint16_t* pwCount);
 
 /**
  * Get one or more folder information entries
@@ -307,11 +307,11 @@ extern MUSB_ItiStatus MUSB_CountTopImages(
  * @return status code
  */
 extern MUSB_ItiStatus MUSB_GetFolderInfo(
-    MUSB_ItiDeviceHandle hDevice,
-    const MUSB_ItiFolderInfo *pParent,
-    uint16_t wMaxInfoCount,
-    MUSB_ItiFolderInfo *aInfo,
-    uint16_t *pwActualInfoCount);
+	MUSB_ItiDeviceHandle hDevice,
+	const MUSB_ItiFolderInfo* pParent,
+	uint16_t wMaxInfoCount,
+	MUSB_ItiFolderInfo* aInfo,
+	uint16_t* pwActualInfoCount);
 
 /**
  * Get one or more image information entries
@@ -325,11 +325,11 @@ extern MUSB_ItiStatus MUSB_GetFolderInfo(
  * @return status code
  */
 extern MUSB_ItiStatus MUSB_GetImageInfo(
-    MUSB_ItiDeviceHandle hDevice,
-    const MUSB_ItiFolderInfo *pParent,
-    uint16_t wMaxInfoCount,
-    MUSB_ItiImageInfo *aInfo,
-    uint16_t *pwActualInfoCount);
+	MUSB_ItiDeviceHandle hDevice,
+	const MUSB_ItiFolderInfo* pParent,
+	uint16_t wMaxInfoCount,
+	MUSB_ItiImageInfo* aInfo,
+	uint16_t* pwActualInfoCount);
 
 /**
  * Get an image
@@ -341,8 +341,8 @@ extern MUSB_ItiStatus MUSB_GetImageInfo(
  * @return status code
  */
 extern MUSB_ItiStatus MUSB_ItiGetImage(
-    MUSB_ItiDeviceHandle hDevice,
-    uint32_t dwHandle, MUSB_ItiFormat Format,
-    uint8_t *pBuffer, uint32_t dwBufferSize);
+	MUSB_ItiDeviceHandle hDevice,
+	uint32_t dwHandle, MUSB_ItiFormat Format,
+	uint8_t* pBuffer, uint32_t dwBufferSize);
 
 #endif	/* multiple inclusion protection */

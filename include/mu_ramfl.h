@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW RAM-based "file" storage.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_RAMFILE_H__
@@ -32,20 +32,20 @@
 typedef struct
 {
     uint32_t dwSize;
-    const char szName[MUSB_RAMFILE_MAX_NAME + 1];
-    uint8_t *pData;
+    const char szName[MUSB_RAMFILE_MAX_NAME+1];
+    uint8_t* pData;
 } MUSB_RamFileInfo;
 
 /**
 * Create a file.
 * Create a new file or silently replace an existing one of the same name.
 * @param dwSize size for file
-* @param pszName NUL-terminated ASCII name
+* @param pszName NUL-terminated ASCII name 
 * (will be silently truncated if necessary)
 * @return file info (with allocated buffer) on success
 * @return NULL on failure (out of memory)
 */
-extern MUSB_RamFileInfo *MUSB_RamFileCreate(uint32_t dwSize, const char *pszName);
+extern MUSB_RamFileInfo* MUSB_RamFileCreate(uint32_t dwSize, const char* pszName);
 
 /**
 * Delete a file.
@@ -55,7 +55,7 @@ extern MUSB_RamFileInfo *MUSB_RamFileCreate(uint32_t dwSize, const char *pszName
 * @return TRUE on success
 * @return FALSE on failure (file not found)
 */
-extern uint8_t MUSB_RamFileDelete(const char *pszName);
+extern uint8_t MUSB_RamFileDelete(const char* pszName);
 
 /**
 * Count files.
@@ -71,6 +71,6 @@ extern uint16_t MUSB_RamFileCount(void);
 * @return info on success
 * @return NULL on failure (invalid index)
 */
-extern const MUSB_RamFileInfo *MUSB_RamFileGetInfo(uint16_t wIndex);
+extern const MUSB_RamFileInfo* MUSB_RamFileGetInfo(uint16_t wIndex);
 
 #endif	/* multiple inclusion protection */

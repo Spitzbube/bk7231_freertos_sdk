@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW communications class definitions.
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_CCD_H__
@@ -192,10 +192,10 @@
  */
 typedef struct
 {
-    uint32_t wBaudRate;
-    uint8_t bCharFormat;
-    uint8_t bParityType;
-    uint8_t bDataBits;
+	uint32_t wBaudRate;
+	uint8_t bCharFormat;
+	uint8_t bParityType;
+	uint8_t bDataBits;
 } MGC_CdcLineCoding;
 
 /* class-specific descriptor types */
@@ -239,10 +239,10 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint16_t bcdCDC;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint16_t bcdCDC;
 } MGC_CdcHeaderDescriptor;
 
 /**
@@ -256,11 +256,11 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bmCapabilities;
-    uint8_t bDataInterface;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bmCapabilities;
+	uint8_t bDataInterface;
 } MGC_CdcCallMgmtDescriptor;
 /** set if device handles call management itself */
 #define MGC_M_CCD_CALL_MGMT_HANDLES_CALL_MGMT 0x01
@@ -277,10 +277,10 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bmCapabilities;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bmCapabilities;
 } MGC_CdcAbstractCntrlDescriptor;
 /** set if device supports _COMM_FEATURE commands */
 #define MGC_M_CCD_ABSTRACT_CNTRL_SUPP_COMM_FEATURE 0x01
@@ -301,10 +301,10 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bmCapabilities;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bmCapabilities;
 } MGC_CdcDirectLineMgmtDescriptor;
 /** set if device supports _PULSE_ commands */
 #define MGC_M_CCD_DIRECT_LINE_SUPP_PULSE        0x01
@@ -324,11 +324,11 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bMasterInterface;
-    uint8_t abSlaveInterfaces[1];
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bMasterInterface;
+	uint8_t abSlaveInterfaces[1];
 } MGC_CdcUnionDescriptor;
 
 /**
@@ -345,14 +345,14 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bEntityId;
-    uint8_t bInInterfaceNo;
-    uint8_t bOutInterfaceNo;
-    uint8_t bmOptions;
-    uint8_t abChildIds[1];
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bEntityId;
+	uint8_t bInInterfaceNo;
+	uint8_t bOutInterfaceNo;
+	uint8_t bmOptions;
+	uint8_t abChildIds[1];
 } MGC_CdcTerminalDescriptor;
 
 /**
@@ -368,13 +368,13 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bEntityId;
-    uint8_t iName;
-    uint8_t bChannelIndex;
-    uint8_t bPhysicalInterface;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bEntityId;
+	uint8_t iName;
+	uint8_t bChannelIndex;
+	uint8_t bPhysicalInterface;
 } MGC_CdcNetworkChannelDescriptor;
 
 /**
@@ -389,12 +389,12 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t bEntityId;
-    uint8_t bProtocol;
-    uint8_t abChildIds[1];
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t bEntityId;
+	uint8_t bProtocol;
+	uint8_t abChildIds[1];
 } MGC_CdcProtocolUnitDescriptor;
 
 /**
@@ -411,14 +411,14 @@ typedef struct
  */
 typedef struct
 {
-    uint8_t bFunctionLength;
-    uint8_t bDescriptorType;
-    uint8_t bDescriptorSubtype;
-    uint8_t iMACAddress;
-    uint32_t bmEthernetStatistics;
-    uint16_t wMaxSegmentSize;
-    uint16_t wNumberMCFilters;
-    uint8_t bNumberPowerFilters;
+	uint8_t bFunctionLength;
+	uint8_t bDescriptorType;
+	uint8_t bDescriptorSubtype;
+	uint8_t iMACAddress;
+	uint32_t bmEthernetStatistics;
+	uint16_t wMaxSegmentSize;
+	uint16_t wNumberMCFilters;
+	uint8_t bNumberPowerFilters;
 } MGC_CdcEthernetDescriptor;
 
 #endif	/* multiple inclusion protection */

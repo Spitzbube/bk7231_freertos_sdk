@@ -15,7 +15,11 @@
  * on the default endpoint).
  * $Revision: 1.35 $
  */
-#include "include.h"
+//#include "include.h"
+
+#pragma thumb
+
+#define MUSB_PRT
 
 #include "mu_impl.h"
 #include "mu_mem.h"
@@ -23,7 +27,7 @@
 #include "mu_descs.h"
 #include "mu_funpr.h"
 
-#if CFG_USB
+#if 1 //CFG_USB
 /**
  * Fill a pipe struct as per the given
  */
@@ -53,6 +57,8 @@ void MGC_FunctionPreparePipe(MGC_Port *pPort, MGC_Pipe *pPipe,
     pPipe->wMaxPacketSize = MUSB_SWAP16P((uint8_t *) & (pEndpoint->wMaxPacketSize));
     pResource->dwWaitFrameCount = 0;
 }
+
+#if 0
 
 /**
  * Set a new interface alternate.
@@ -138,6 +144,8 @@ static uint32_t MGC_FunctionSetInterface(MGC_Port *pPort, uint8_t bIfaceIndex,
 
     return dwStatus;
 }
+
+#endif
 
 /**
  * Find/bind a configuration.
@@ -294,6 +302,8 @@ static uint32_t MGC_FunctionBindConfig(MGC_Port *pPort,
     return dwStatus;
 }
 
+#if 0
+
 /**
  * Verify that resources are available to support all given configurations
  * @param pPort port pointer
@@ -445,6 +455,8 @@ uint32_t MGC_FunctionDestroy(MGC_Port *pPort)
     return MUSB_STATUS_OK;
 }
 
+#endif
+
 /*
  * Handle config selected
  * @return TRUE on success
@@ -489,7 +501,7 @@ static uint8_t MGC_FunctionConfigSelected(MGC_Port *pPort, uint8_t bConfigValue)
             pPort->bConfigValue = bConfigValue;
             pPort->pFunctionClient->pfDeviceConfigSelected(
                 pPort->pFunctionClient->pPrivateData, (MUSB_BusHandle)pPort,
-                bConfigValue, (MUSB_PipePtr *)pPort->apPipe);
+                bConfigValue, (MUSB_Pipe*)pPort->apPipe);
             MGC_FunctionChangeState(pPort, MUSB_CONFIGURED);
             bOk = TRUE;
         }
@@ -497,6 +509,8 @@ static uint8_t MGC_FunctionConfigSelected(MGC_Port *pPort, uint8_t bConfigValue)
 
     return bOk;
 }
+
+#if 0
 
 /**
  * Based on connection speed, set config pointer array to prepare for SET_CONFIGURATION()
@@ -528,6 +542,8 @@ void MGC_FunctionSpeedSet(MGC_Port *pPort)
     }
     dwStatus ++;//avoid warning
 }
+
+#endif
 
 /*
 * Parse a setup and possibly handle it based on descriptors
@@ -976,6 +992,7 @@ uint8_t MGC_FunctionParseSetup(MGC_Port *pPort, uint8_t *pbStatus)
                 bType = bQueryType = (uint8_t)(wValue >> 8);
                 wWhich = wValue & 0x00ff;
 
+#if 0 //TODO!!!
                 switch (bType)
                 {
                 case MUSB_DT_HID_REPORT:
@@ -1006,6 +1023,7 @@ uint8_t MGC_FunctionParseSetup(MGC_Port *pPort, uint8_t *pbStatus)
                 default:
                     break;
                 }
+#endif
             }
             break;
 
@@ -1068,6 +1086,7 @@ uint8_t MGC_FunctionParseSetup(MGC_Port *pPort, uint8_t *pbStatus)
         wIndex = ((((pRequest->wIndex) & 0x00FF) << 8) | (((pRequest->wIndex) & 0xFF00) >> 8));
         MUSB_PRT("CLASS: pRequest->bRequest = 0x%x, wIndex = 0x%x, wValue = 0x%x\r\n",
                  pRequest->bRequest, wIndex, wValue);
+#if 0 //TODO!!!
         switch (pRequest->bRequest)
         {
         case MUSB_CLASS_SET_CURRENT:
@@ -1123,6 +1142,7 @@ uint8_t MGC_FunctionParseSetup(MGC_Port *pPort, uint8_t *pbStatus)
             bOurs = FALSE;
             break;
         }
+#endif
     }	/* END: if class request */
     else if (pRequest && (MUSB_TYPE_VENDOR == (pRequest->bmRequestType & MUSB_TYPE_MASK)))
     {
@@ -1137,6 +1157,7 @@ uint8_t MGC_FunctionParseSetup(MGC_Port *pPort, uint8_t *pbStatus)
 /*
  * Change state
  */
+/* 23478090 - complete */
 void MGC_FunctionChangeState(MGC_Port *pPort, MUSB_State State)
 {
     /* only signal a change */
@@ -1151,6 +1172,8 @@ void MGC_FunctionChangeState(MGC_Port *pPort, MUSB_State State)
         }
     }
 }
+
+#if 0
 
 /*
 * Respond to host setup
@@ -1185,6 +1208,7 @@ void MUSB_SetFunctionParse(MUSB_BusHandle hBus, uint8_t bParse)
         pPort->bParse = bParse;
     }
 }
+#endif
 #endif
 // eof
 

@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW USB Software Platform bit-manipulation library API.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_BITS_H__
@@ -22,7 +22,7 @@
 
 /**
  * Extract bits.
- * Extract a range of up to 32 bits from an arbitrary bit position in a buffer,
+ * Extract a range of up to 32 bits from an arbitrary bit position in a buffer, 
  * assumed to be in USB byte order.
  * @param pBuffer buffer pointer
  * @param bOffset the bit offset into the buffer's first byte
@@ -32,13 +32,12 @@
  * @return -1 if pBuffer==NULL or pdwResult==NULL
  * @return -2 if illegal offset/count [((bOffset+bCount) > 32) or (bOffset > 7)]
  */
-/*
 extern int MUSB_BitsGet(const uint8_t* pBuffer, uint8_t bOffset, uint8_t bCount,
-uint32_t* pdwResult);*/
+uint32_t* pdwResult);
 
 /**
  * Set bits.
- * Set a range of up to 32 bits in an arbitrary bit position in a buffer,
+ * Set a range of up to 32 bits in an arbitrary bit position in a buffer, 
  * assumed to be in USB byte order.
  * @param pBuffer buffer pointer
  * @param bOffset the bit offset into the buffer's first byte
@@ -48,8 +47,7 @@ uint32_t* pdwResult);*/
  * @return -1 if pBuffer==NULL
  * @return -2 if illegal offset/count [(bCount==0) or ((bOffset+bCount) > 32) or (bOffset > 7)]
  */
-/*
 extern int MUSB_BitsSet(uint8_t* pBuffer, uint8_t bOffset, uint8_t bCount,
 uint32_t dwValue);
-*/
+
 #endif	/* multiple inclusion protection */

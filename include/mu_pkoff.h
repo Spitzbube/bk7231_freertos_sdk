@@ -14,7 +14,7 @@
  * Turn structure packing off.
  * This must be done in a header because some compilers do it
  * with #pragma's.
- * $Revision: 1.2 $
+ * $Revision: 5874 $
  */
 
 /* not needed for 8051 */

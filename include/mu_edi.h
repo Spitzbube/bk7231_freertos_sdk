@@ -12,13 +12,13 @@
 
 /*
  * MUSB-MicroSW EDI (Ethernet Device Interface).
- * $Revision: 1.1 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_EDI_H__
 #define __MUSB_EDI_H__
 
-/**
+/** 
  * Introduction to Ethernet Device Interface.
  * This is the interface between the device-specific code
  * for a CDC/Ethernet USB device and the USB-specific code.
@@ -34,7 +34,7 @@
 
 /************************* EDI CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_EdiStatus.
  * EDI Operation Status.
  */
@@ -66,9 +66,9 @@ typedef enum
  */
 typedef struct
 {
-    unsigned char *pBuffer;
-    unsigned long dwLength;
-    unsigned long dwUsedSize;
+	unsigned char* pBuffer;
+	unsigned long dwLength;
+	unsigned long dwUsedSize;
 } MUSB_EdiRxBuffer;
 
 /**
@@ -82,8 +82,8 @@ typedef struct
  * FALSE if the buffer was loaned, so the data is already in
  * client-owned memory
  */
-typedef void (*MUSB_pfEdiPacketReceived)(unsigned char *pBuffer,
-        unsigned short wLength, unsigned char bMustCopy);
+typedef void (*MUSB_pfEdiPacketReceived)(unsigned char* pBuffer, 
+	unsigned short wLength, unsigned char bMustCopy);
 
 /**
  * Send completion callback.
@@ -98,7 +98,7 @@ typedef void (*MUSB_pfEdiSendComplete)(unsigned short wActualBytes);
  * Set packet filtering.
  * The USB-specific code calls this function to request the device-specific
  * code to filter packets (if possible) according to the parameters.
- * For every combination of filter parameters supported,
+ * For every combination of filter parameters supported, 
  * the device-specific code should call MUSB_EdiSendPacket only
  * for the packets meeting the criteria.
  * Multiple parameters may be TRUE at the same time.
@@ -112,18 +112,18 @@ typedef void (*MUSB_pfEdiSendComplete)(unsigned short wActualBytes);
  * @see MUSB_EdiSendPacket
  */
 typedef void (*MUSB_pfEdiSetPacketFilters)(
-    unsigned char bDirected,
-    unsigned char bBroadcast,
-    unsigned char bMulticast,
-    unsigned char bAllMulticast,
-    unsigned char bPromiscuous);
+	unsigned char bDirected,
+	unsigned char bBroadcast,
+	unsigned char bMulticast,
+	unsigned char bAllMulticast,
+	unsigned char bPromiscuous);
 
 /**
  * Return a loaned buffer to the device-specific code.
  * @param pBuffer pointer to a client-allocated buffer-sharing struct
  * @see MUSB_EdiLoanBuffer
  */
-typedef void (*MUSB_pfEdiReturnRxBuffer)(MUSB_EdiRxBuffer *pBuffer);
+typedef void (*MUSB_pfEdiReturnRxBuffer)(MUSB_EdiRxBuffer* pBuffer);
 
 /**
  * Set enabled state.
@@ -144,13 +144,13 @@ typedef void (*MUSB_pfEdiSetEnabled)(unsigned char bEnabled);
  * @field pfEdiReturnRxBuffer Rx loaned-buffer-return function
  * @field pfSetEnabled enable-state function
  */
-typedef struct
+typedef struct 
 {
-    MUSB_pfEdiSetPacketFilters pfEdiSetPacketFilters;
-    MUSB_pfEdiPacketReceived pfEdiPacketReceived;
-    MUSB_pfEdiSendComplete pfEdiSendComplete;
-    MUSB_pfEdiReturnRxBuffer pfEdiReturnRxBuffer;
-    MUSB_pfEdiSetEnabled pfEdiSetEnabled;
+	MUSB_pfEdiSetPacketFilters pfEdiSetPacketFilters;
+	MUSB_pfEdiPacketReceived pfEdiPacketReceived;
+	MUSB_pfEdiSendComplete pfEdiSendComplete;
+	MUSB_pfEdiReturnRxBuffer pfEdiReturnRxBuffer;
+	MUSB_pfEdiSetEnabled pfEdiSetEnabled;
 } MUSB_EdiDeviceFunctions;
 
 /************************* EDI FUNCTIONS **************************/
@@ -161,7 +161,7 @@ typedef struct
  * memory must be maintained by the client
  * @return operation status
  */
-extern MUSB_EdiStatus MUSB_EdiRegister(MUSB_EdiDeviceFunctions *pFunctions);
+extern MUSB_EdiStatus MUSB_EdiRegister(MUSB_EdiDeviceFunctions* pFunctions);
 
 /**
  * Set connection state.
@@ -181,8 +181,8 @@ extern MUSB_EdiStatus MUSB_EdiSetConnectionState(unsigned char bConnected);
  * @return operation status
  */
 extern MUSB_EdiStatus MUSB_EdiSetConnectionSpeed(
-    unsigned long dwUpstreamBitRate,
-    unsigned long dwDownstreamBitRate);
+	unsigned long dwUpstreamBitRate,
+	unsigned long dwDownstreamBitRate);
 
 /**
  * The CDC/Ethernet device-specific code calls this to loan an Rx buffer
@@ -196,7 +196,7 @@ extern MUSB_EdiStatus MUSB_EdiSetConnectionSpeed(
  * @param pBuffer pointer to buffer-sharing struct
  * @return operation status
  */
-extern MUSB_EdiStatus MUSB_EdiLoanBuffer(MUSB_EdiRxBuffer *pBuffer);
+extern MUSB_EdiStatus MUSB_EdiLoanBuffer(MUSB_EdiRxBuffer* pBuffer);
 
 /**
  * Send Ethernet packet.
@@ -208,7 +208,7 @@ extern MUSB_EdiStatus MUSB_EdiLoanBuffer(MUSB_EdiRxBuffer *pBuffer);
  * @param wLength packet length in bytes, not including checksum
  * @return operation status
  */
-extern MUSB_EdiStatus MUSB_EdiSendPacket(const unsigned char *pBuffer,
-        unsigned short wLength);
+extern MUSB_EdiStatus MUSB_EdiSendPacket(const unsigned char* pBuffer,
+	unsigned short wLength);
 
 #endif	/* multiple inclusion protection */

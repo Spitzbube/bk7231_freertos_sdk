@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Screen Pointer Interface (SPI).
- * $Revision: 1.6 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_SPI_H__
@@ -20,7 +20,7 @@
 
 #include "mu_tools.h"
 
-/**
+/** 
  * Introduction to Screen Pointer Interface.
  * The functions herein can be implemented by an OS to allow
  * the Mentor USB pointing-device driver to be hooked into the OS'
@@ -29,14 +29,14 @@
  * The callbacks herein are implemented by the Mentor driver,
  * exposing the functionality needed by an OS to use the pointing device.
  * The above could also be applied to a custom, non-OS environment.
- * Finally, an implementation can be created solely for demonstration purposes
+ * Finally, an implementation can be created solely for demonstration purposes 
  * (to avoid relying on platforms with pointing device support,
  * and/or to allow the Mentor USB pointing-device driver to be tested).
  */
 
 /************************* SPI CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_SpiNameQuery.
  * SPI name query.
  */
@@ -52,7 +52,7 @@ typedef enum
     MUSB_SPI_NAME_WHEEL
 } MUSB_SpiNameQuery;
 
-/**
+/** 
  * MUSB_SpiWheelType.
  * SPI wheel type.
  */
@@ -70,7 +70,7 @@ typedef enum
     MUSB_SPI_WHEEL_UNKNOWN = 8
 } MUSB_SpiWheelType;
 
-/**
+/** 
  * MUSB_SpiStatus.
  * SPI Operation Status.
  */
@@ -93,25 +93,25 @@ typedef enum
  * SPI device information.
  * A pointing-device driver fills this with any information
  * it knows before calling MUSB_SpiAddDevice.
- *
+ * 
  * @field bButtonCount how many buttons the device has
- *
+ * 
  * @field bmWheels a bitmask of 1's shifted left by the values
  * of the MUSB_SPI_WHEEL_* constants, representing the wheels present.
  * This supports zero or one of each "well-known" wheel type;
  * up to 24 other wheels can be supported with values starting
  * at MUSB_SPI_WHEEL_OTHER
- *
+ * 
  * @field wVendorId USB VID,
  * for the HFI implementation's use in generating a volume name
- *
+ * 
  * @field wProductId USB PID,
  * for the HFI implementation's use in generating a volume name
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the HFI implementation's use in generating a volume name
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the HFI implementation's use in generating a volume name
  */
 typedef struct
@@ -131,30 +131,30 @@ typedef struct
  * @param NameQuery indicates which name is requested
  * @param bIndex the index of the button or wheel whose name is requested
  * @param wLanguageCode a language/country code as per USB 2.0
- * @param pName storage for a UNICODE name,
+ * @param pName storage for a UNICODE name, 
  * filled and terminated with a wide-NUL on success
  * @param bNameLength size, in 16-bit UNICODE characters, of the pName buffer
  * @return status code
  */
-typedef MUSB_SpiStatus (*MUSB_pfSpiGetName)(void *pDeviceData,
-        MUSB_SpiNameQuery NameQuery, uint8_t bIndex,
-        uint16_t wLanguageCode, uint16_t *pName, uint8_t bNameLength);
+typedef MUSB_SpiStatus (*MUSB_pfSpiGetName)(void* pDeviceData,
+    MUSB_SpiNameQuery NameQuery, uint8_t bIndex,
+    uint16_t wLanguageCode, uint16_t* pName, uint8_t bNameLength);
 
 /**
  * MUSB_SpiDevice.
  * Ddevice driver callbacks (dispatch table).
- * @field pPrivateData device driver private data;
+ * @field pPrivateData device driver private data; 
  * not to be interpreted by the SPI implementation
  * @field pfGetName get-name callback
  */
-typedef struct
+typedef struct 
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfSpiGetName pfGetName;
 } MUSB_SpiDevice;
 
 /** Handle created by the SPI implementation */
-typedef void *MUSB_SpiDeviceHandle;
+typedef void* MUSB_SpiDeviceHandle;
 
 /************************* SPI FUNCTIONS **************************/
 
@@ -163,11 +163,11 @@ typedef void *MUSB_SpiDeviceHandle;
  * A pointing-device driver calls this to inform the SPI implementation
  * that a new device is being used.
  * The SPI implementation uses the device information to determine if
- * it can support the device,
+ * it can support the device, 
  * and prepare the system to accept position information from it.
- * Error messages on failure are the SPI implementation's responsibility,
+ * Error messages on failure are the SPI implementation's responsibility, 
  * since the error messaging mechanism is OS-dependent.
- *
+ * 
  * @param phDevice where to store a device handle on success
  * @param pInfo pointer to device information struct
  * @param pDevice pointer to struct with callbacks to access the device
@@ -175,8 +175,8 @@ typedef void *MUSB_SpiDeviceHandle;
  * @return MUSB_SPI_ERROR_UNSUPPORTED_DEVICE if the device cannot
  * be supported (e.g. not enough buttons)
  */
-extern MUSB_SpiStatus MUSB_SpiAddDevice(MUSB_SpiDeviceHandle *phDevice,
-                                        const MUSB_SpiDeviceInfo *pInfo, MUSB_SpiDevice *pDevice);
+extern MUSB_SpiStatus MUSB_SpiAddDevice(MUSB_SpiDeviceHandle* phDevice,
+    const MUSB_SpiDeviceInfo* pInfo, MUSB_SpiDevice* pDevice);
 
 /**
  * A pointing-device button has been pressed.
@@ -185,8 +185,8 @@ extern MUSB_SpiStatus MUSB_SpiAddDevice(MUSB_SpiDeviceHandle *phDevice,
  * @param hDevice a device handle as filled by a successful MUSB_SpiAddDevice
  * @param bButtonIndex the index of the button
  */
-extern void MUSB_SpiButtonPressed(MUSB_SpiDeviceHandle hDevice,
-                                  uint8_t bButtonIndex);
+extern void MUSB_SpiButtonPressed(MUSB_SpiDeviceHandle hDevice, 
+    uint8_t bButtonIndex);
 
 /**
  * A pointing-device button has been pressed.
@@ -195,8 +195,8 @@ extern void MUSB_SpiButtonPressed(MUSB_SpiDeviceHandle hDevice,
  * @param hDevice a device handle as filled by a successful MUSB_SpiAddDevice
  * @param bButtonIndex the index of the button
  */
-extern void MUSB_SpiButtonReleased(MUSB_SpiDeviceHandle hDevice,
-                                   uint8_t bButtonIndex);
+extern void MUSB_SpiButtonReleased(MUSB_SpiDeviceHandle hDevice, 
+    uint8_t bButtonIndex);
 
 /**
  * Pointing-device wheels have moved.
@@ -214,8 +214,8 @@ extern void MUSB_SpiButtonReleased(MUSB_SpiDeviceHandle hDevice,
  * is present, the buffer will represent x, y, and "other" wheel motion
  * in offsets 0, 1 and 2.
  */
-extern void MUSB_SpiWheelsMoved(MUSB_SpiDeviceHandle hDevice,
-                                const int8_t *pMotions);
+extern void MUSB_SpiWheelsMoved(MUSB_SpiDeviceHandle hDevice, 
+    const int8_t* pMotions);
 
 /**
  * A pointing device was removed.

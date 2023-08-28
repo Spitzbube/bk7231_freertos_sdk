@@ -18,7 +18,10 @@
 #include "mu_list.h"
 #include "mu_mem.h"
 
+#pragma thumb
+
 /* Call this (portable) or initialize struct (non-portable) */
+/* 234798c8 / - complete */
 MUSB_Array *MUSB_ArrayInit(MUSB_Array *pArray,
                            uint_fast16_t wItemSize,
                            uint_fast16_t wStaticItemCount,
@@ -48,6 +51,7 @@ MUSB_Array *MUSB_ArrayInit(MUSB_Array *pArray,
 }
 
 /* How many items are in array? */
+/* 234798fa / - complete */
 uint_fast16_t MUSB_ArrayLength(MUSB_Array *pArray)
 {
     uint_fast16_t result = 0;
@@ -59,7 +63,8 @@ uint_fast16_t MUSB_ArrayLength(MUSB_Array *pArray)
 }
 
 /* Get the item at the given index */
-void *MUSB_ArrayFetch(MUSB_Array *pArray, uint_fast16_t wIndex)
+/* 23479906 / - complete */
+void *MUSB_ArrayFetch(MUSB_Array *pArray, uint16_t wIndex)
 {
     void *pResult = NULL;
     if(pArray && (wIndex < pArray->wItemCount))
@@ -79,13 +84,14 @@ void *MUSB_ArrayFetch(MUSB_Array *pArray, uint_fast16_t wIndex)
 }
 
 /* Append an item */
+/* 23479930 / - todo */
 uint8_t MUSB_ArrayAppend(MUSB_Array *pArray, const void *pItem)
 {
     uint8_t bResult = FALSE;
     void *pDest = NULL;
     uint_fast16_t wCount;
     uint_fast16_t wIncrement;
-    uint_fast16_t wNewCount;
+    uint16_t wNewCount;
 
     if(!pArray || !pItem)
     {
@@ -130,6 +136,8 @@ uint8_t MUSB_ArrayAppend(MUSB_Array *pArray, const void *pItem)
     return bResult;
 }
 
+#if 0
+
 /* Remove all array items */
 void MUSB_ArrayClear(MUSB_Array *pArray)
 {
@@ -145,7 +153,10 @@ void MUSB_ArrayClear(MUSB_Array *pArray)
     }
 }
 
+#endif
+
 /* Initialize the given list */
+/* 234799cc / - complete */
 void MUSB_ListInit(MUSB_LinkedList *pList)
 {
     if(pList)
@@ -157,10 +168,11 @@ void MUSB_ListInit(MUSB_LinkedList *pList)
 }
 
 /* Get the number of items in the given list */
-uint_fast16_t MUSB_ListLength(MUSB_LinkedList *pList)
+/* 234799da / - complete */
+uint16_t MUSB_ListLength(MUSB_LinkedList *pList)
 {
     MUSB_LinkedList *pNext;
-    uint_fast16_t wResult = 0;
+    uint16_t wResult = 0;
 
     if(pList && pList->pItem)
     {
@@ -176,6 +188,7 @@ uint_fast16_t MUSB_ListLength(MUSB_LinkedList *pList)
 }
 
 /* Find the index'th item (counting from 0) in the given list */
+/* 23479a18 / - complete */
 void *MUSB_ListFindItem(MUSB_LinkedList *pList, uint_fast16_t wIndex)
 {
     void *pItem = NULL;
@@ -189,9 +202,10 @@ void *MUSB_ListFindItem(MUSB_LinkedList *pList, uint_fast16_t wIndex)
 }
 
 /* Find the index'th record (counting from 0) in the given list */
+/* 234799fa - complete */
 MUSB_LinkedList *MUSB_ListFindRecord(MUSB_LinkedList *pList, uint_fast16_t wIndex)
 {
-    uint_fast16_t wCount = 0;
+    uint16_t wCount = 0;
     MUSB_LinkedList *pResult = NULL;
     MUSB_LinkedList *pNext = pList;
     while((wCount < wIndex) && pNext)
@@ -206,6 +220,7 @@ MUSB_LinkedList *MUSB_ListFindRecord(MUSB_LinkedList *pList, uint_fast16_t wInde
     return pResult;
 }
 
+/* 23479afc / - complete */
 static uint8_t MGC_ListInsertItem(MUSB_LinkedList *pPos, void *pItem,
                                   uint32_t dwCount)
 {
@@ -225,6 +240,7 @@ static uint8_t MGC_ListInsertItem(MUSB_LinkedList *pPos, void *pItem,
 }
 
 /* Append an item to the end of the given list */
+/* 23479a2a - complete */
 uint8_t MUSB_ListAppendItem(MUSB_LinkedList *pList, void *pItem,
                             unsigned long dwCount)
 {
@@ -299,6 +315,7 @@ uint8_t MUSB_ListInsertItem(MUSB_LinkedList *pList, uint_fast16_t wItemIndex,
 }
 
 /* Remove an item from the given list */
+/* 23479aa4 - complete */
 void MUSB_ListRemoveItem(MUSB_LinkedList *pList, void *pItem)
 {
     MUSB_LinkedList *pNext = pList;
@@ -338,7 +355,11 @@ void MUSB_ListRemoveItem(MUSB_LinkedList *pList, void *pItem)
     {
         pNext = pNext->pNext;
     }
+#if 0
     if(pNext->pNext->pItem == pItem)
+#else
+    if(pNext->pNext)
+#endif
     {
         /* found it; unlink and free storage */
         pPos = pNext->pNext;

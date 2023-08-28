@@ -12,7 +12,7 @@
 
 /*
  * Device Framework (USB 2.0 chapter 9) definitions.
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_DEVICE_H__
@@ -21,7 +21,6 @@
 /* USB 2.0 device framework definitions */
 
 #include "mu_tools.h"
-#include "compiler.h"
 
 /*
 * Device and/or Interface Class codes
@@ -36,9 +35,7 @@
 #define MUSB_CLASS_MASS_STORAGE  8
 #define MUSB_CLASS_HUB           9
 #define MUSB_CLASS_DATA          10
-#define MUSB_CLASS_VIDEO         0x0E
 #define MUSB_CLASS_DIAGNOSTIC    0xDC
-#define MUSB_CLASS_MISC          0xEF
 #define MUSB_CLASS_APP_SPEC      0xfe
 #define MUSB_CLASS_VENDOR_SPEC   0xff
 
@@ -75,11 +72,9 @@
 #define MUSB_DT_INTERFACE		0x04
 #define MUSB_DT_ENDPOINT		0x05
 #define	MUSB_DT_DEVICE_QUALIFIER	0x06
-#define	MUSB_DT_OTHER_SPEED		    0x07
+#define	MUSB_DT_OTHER_SPEED		0X07
 #define	MUSB_DT_INTERFACE_POWER		0x08
-#define	MUSB_DT_OTG			    	0x09
-#define	MUSB_DT_BOS			    	0x0F
-#define	MUSB_DT_HID_REPORT			0x22
+#define	MUSB_DT_OTG			0x09
 
 /*
 * Descriptor sizes per descriptor type
@@ -97,16 +92,6 @@
 */
 #define MUSB_ENDPOINT_NUMBER_MASK	0x0f	/* in bEndpointAddress */
 #define MUSB_ENDPOINT_DIR_MASK		0x80
-
-/*
- * Alternatset
- */
-#define INTERFACE_ALTERSET			0x01/*0x00 Is BULK Interface*/ /*0x01 Is ISOC Interface*/
-
-/*
- *ISOC pack head
- */
-#define ISOC_PACK_HEAD_LEN			12
 
 /* Traffic types in bmAttributes */
 #define MUSB_ENDPOINT_XFERTYPE_MASK	0x03
@@ -152,28 +137,6 @@
 #define MUSB_REQ_SYNCH_FRAME		0x0C
 
 /*
-* Class requests
-*/
-#define MUSB_CLASS_GET_IDLE         0x02   // Code for Get Idle
-#define MUSB_CLASS_GET_PROTOCOL     0x03   // Code for Get Protocol
-#define MUSB_CLASS_SET_REPORT       0x09   // Code for Set Report
-#define MUSB_CLASS_SET_IDLE         0x0A   // Code for Set Idle
-#define MUSB_CLASS_SET_PROTOCOL     0x0B   // Code for Set Protocol
-
-#define MUSB_CLASS_SET_CURRENT      0x01
-#define MUSB_CLASS_GET_CURRENT      0x81
-#define MUSB_CLASS_GET_MINIUM       0x82
-#define MUSB_CLASS_GET_MAXIUM       0x83
-#define MUSB_CLASS_GET_RES          0x84
-#define MUSB_CLASS_GET_LEN          0x85
-#define MUSB_CLASS_GET_INFO         0x86
-#define MUSB_CLASS_GET_DEF          0x87
-
-#define MUSB_CLASS_MUTE_CTRL        0x01
-#define MUSB_CLASS_VOLUME_CTRL      0x02
-#define MUSB_CLASS_BASS_BOOST_CTRL  0x09
-
-/*
 * OTG requests
 */
 #define	MUSB_OTG_SRP			0x01	/* bit 0 of bmAttributes */
@@ -213,7 +176,7 @@ typedef struct
     uint16_t wValue;
     uint16_t wIndex;
     uint16_t wLength;
-} __attribute__ ((packed))   MUSB_DeviceRequest;
+} MUSB_DeviceRequest;
 #include "mu_pkoff.h"
 
 /* All standard descriptors have these 2 fields in common */
@@ -234,7 +197,7 @@ typedef struct
     uint16_t bcdUSB;
     uint8_t bDeviceClass;
     uint8_t bDeviceSubClass;
-    uint8_t bDeviceProtocol;
+    uint8_t bDeviceProtocol; //6
     uint8_t bMaxPacketSize0;
     uint16_t idVendor;
     uint16_t idProduct;
@@ -243,7 +206,7 @@ typedef struct
     uint8_t iProduct;
     uint8_t iSerialNumber;
     uint8_t bNumConfigurations;
-} __attribute__ ((packed))  MUSB_DeviceDescriptor;
+} MUSB_DeviceDescriptor;
 #include "mu_pkoff.h"
 
 /* Endpoint descriptor (USB 2.0) */
@@ -252,11 +215,11 @@ typedef	struct
 {
     uint8_t bLength;
     uint8_t bDescriptorType;
-    uint8_t bEndpointAddress;
-    uint8_t bmAttributes;
+    uint8_t bEndpointAddress; //2
+    uint8_t bmAttributes; //3
     uint16_t wMaxPacketSize;
     uint8_t bInterval;
-} __attribute__ ((packed))   MUSB_EndpointDescriptor;
+} MUSB_EndpointDescriptor;
 #include "mu_pkoff.h"
 
 /* Interface descriptor (USB 2.0) */
@@ -270,9 +233,9 @@ typedef	struct
     uint8_t bNumEndpoints;
     uint8_t bInterfaceClass;
     uint8_t bInterfaceSubClass;
-    uint8_t bInterfaceProtocol;
+    uint8_t bInterfaceProtocol; //7
     uint8_t iInterface;
-} __attribute__ ((packed))  MUSB_InterfaceDescriptor;
+} MUSB_InterfaceDescriptor; 
 #include "mu_pkoff.h"
 
 /* Configuration descriptor (USB 2.0) */
@@ -285,9 +248,9 @@ typedef	struct
     uint8_t bNumInterfaces;
     uint8_t bConfigurationValue;
     uint8_t iConfiguration;
-    uint8_t bmAttributes;
+    uint8_t bmAttributes; //7
     uint8_t bMaxPower;
-} __attribute__ ((packed)) MUSB_ConfigurationDescriptor;
+} MUSB_ConfigurationDescriptor;
 #include "mu_pkoff.h"
 
 /* String descriptor (USB 2.0) */
@@ -297,7 +260,7 @@ typedef	struct
     uint8_t bLength;
     uint8_t bDescriptorType;
     uint16_t wData[1];
-} __attribute__ ((packed))   MUSB_StringDescriptor;
+} MUSB_StringDescriptor;
 #include "mu_pkoff.h"
 
 /* OTG descriptor (OTG 1.0a) */
@@ -307,7 +270,7 @@ typedef	struct
     uint8_t bLength;
     uint8_t bDescriptorType;
     uint8_t bmAttributes;	/* bit 0=SRP; bit 1=HNP */
-} __attribute__ ((packed))   MUSB_OtgDescriptor;
+} MUSB_OtgDescriptor;
 #include "mu_pkoff.h"
 
 /* Qualifier descriptor */
@@ -323,7 +286,7 @@ typedef struct
     uint8_t bMaxPacketSize0;
     uint8_t bNumConfigurations;
     uint8_t bRESERVED;
-} __attribute__ ((packed))   MUSB_QualifierDescriptor;
+} MUSB_QualifierDescriptor;
 #include "mu_pkoff.h"
 
 

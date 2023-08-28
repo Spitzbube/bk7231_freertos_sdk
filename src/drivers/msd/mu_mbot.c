@@ -14,7 +14,9 @@
  * MUSBStack-S mass-storage BOT Protocol implementation
  * $Revision: 1.39 $
  */
-#include "include.h"
+//#include "include.h"
+
+#pragma thumb
 
 #include "mu_arch.h"
 #include "mu_bot.h"
@@ -22,10 +24,12 @@
 #include "mu_diag.h"
 #include "mu_hfi.h"
 #include "mu_mem.h"
-#include "mu_impl.h"
+//#include "mu_impl.h"
 
 #include "mu_mpcsi.h"
 #include "mu_mapi.h"
+
+#define MUSB_PRT
 
 /****************************** CONSTANTS ********************************/
 
@@ -85,8 +89,8 @@ typedef struct
     const MUSB_EndpointDescriptor *pOutEnd;
     MGC_MsdCmdSet *pCmdSet;
     uint32_t dwTag;
-    MUSB_PipePtr hInPipe;
-    MUSB_PipePtr hOutPipe;
+    MUSB_Pipe hInPipe;
+    MUSB_Pipe hOutPipe;
     MGC_MsdCsw Csw;
     MUSB_Irp CswIrp;
     struct _MGC_MsdBotVolume *pCurrentVolume;
@@ -151,7 +155,7 @@ typedef struct _MGC_MsdBotVolume
 } MGC_MsdBotVolume;
 
 /******************************* FORWARDS ********************************/
-#if CFG_SUPPORT_MSD
+#if 1 //CFG_SUPPORT_MSD
 static uint8_t MGC_BotProtocolStartDevice(void *pProtocolData,
         MUSB_Device *pDevice);
 
@@ -260,6 +264,8 @@ static const uint8_t MGC_aMsdBotClearHaltData[] =
 };
 
 /******************************** FUNCTIONS ******************************/
+
+/* 2347b7f4 - todo */
 MGC_MsdProtocol *MGC_CreateBotInstance(MUSB_Device *pDevice,
                                        MUSB_BusHandle hBus,
                                        const MUSB_InterfaceDescriptor *pIfaceDesc,
@@ -269,8 +275,8 @@ MGC_MsdProtocol *MGC_CreateBotInstance(MUSB_Device *pDevice,
 {
     MUSB_DeviceEndpoint InEnd;
     MUSB_DeviceEndpoint OutEnd;
-    MUSB_PipePtr hInPipe;
-    MUSB_PipePtr hOutPipe;
+    MUSB_Pipe hInPipe;
+    MUSB_Pipe hOutPipe;
     MGC_MsdBotProtocol *pBot;
 
     InEnd.pDevice = OutEnd.pDevice = pDevice;
@@ -348,14 +354,29 @@ MGC_MsdProtocol *MGC_CreateBotInstance(MUSB_Device *pDevice,
     return NULL;
 }
 
+/* 2347b8c8 - todo */
 void MGC_DestroyBotInstance(MGC_MsdProtocol *pProtocol)
 {
     uint8_t bIndex;
     MGC_MsdBotVolume *pVolume;
+
+    if (pProtocol == 0)
+    {
+    	return;
+    }
+
     MGC_MsdBotProtocol *pBot = (MGC_MsdBotProtocol *)pProtocol->pProtocolData;
 
-    MUSB_CancelControlTransfer(pBot->ControlIrp.pDevice->pPort,
-                               &(pBot->ControlIrp));
+    if (pBot == 0)
+	{
+    	return;
+	}
+
+    if (pBot->ControlIrp.pDevice != 0)
+    {
+        MUSB_CancelControlTransfer(pBot->ControlIrp.pDevice->pPort,
+                                   &(pBot->ControlIrp));
+    }
 
     MUSB_ClosePipe(pBot->hOutPipe);
     pBot->hOutPipe = NULL;
@@ -366,7 +387,7 @@ void MGC_DestroyBotInstance(MGC_MsdProtocol *pProtocol)
     for(bIndex = 0; bIndex < pBot->bLunCount; bIndex++)
     {
         pVolume = &(pBot->aVolume[bIndex]);
-        MUSB_HfiDeviceRemoved();
+        MUSB_HfiDeviceRemoved(pVolume->hVolume);
         pBot->pCmdSet->pfDestroyInstance(pVolume->pCmdSetInstance);
     }
 
@@ -537,6 +558,7 @@ static uint8_t MGC_BotProtocolSetMediumInfo(void *pProtocolData,
     return TRUE;
 }
 
+/* 2347acae - complete */
 static void MGC_BotProtocolSetReady(void *pProtocolData,
                                     uint8_t bLun,
                                     uint8_t bIsReady)
@@ -675,7 +697,7 @@ static uint32_t MGC_BotControlIrpComplete(void *pParam, MUSB_ControlIrp *pIrp)
             for(bIndex = 0; bIndex < pBot->bLunCount; bIndex++)
             {
                 pVolume = &(pBot->aVolume[bIndex]);
-                //¼´º¯Êý : MGC_ScsiCmdSetCreateInstance()
+                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ : MGC_ScsiCmdSetCreateInstance()
                 pVolume->pCmdSetInstance = pBot->pCmdSet->pfCreateInstance(pBot->bLunCount);
                 if(pVolume->pCmdSetInstance)
                 {
@@ -689,10 +711,10 @@ static uint32_t MGC_BotControlIrpComplete(void *pParam, MUSB_ControlIrp *pIrp)
                 if(pVolume->pCmdSetInstance)
                 {
                     /* kick off command-set-specific device discovery for first LUN */
-                    // MGC_ScsiCmdSetDiscoverDevice()£¬·¢ËÍcmd12ÃüÁî
+                    // MGC_ScsiCmdSetDiscoverDevice()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cmd12ï¿½ï¿½ï¿½ï¿½
                     pBot->pCmdSet->pfDiscoverDevice(
                         pVolume->pCmdSetInstance, &(pBot->Protocol), 0);
-                    //·¢ËÍÍê³Éºó,»á²úÉúÖÐ¶Ï,ÔÚBSRÖÐÔò»áµ÷ÓÃ pVolume->CbwIrp.pfIrpComplete = MGC_BotCbwComplete;
+                    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½,ï¿½ï¿½BSRï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ pVolume->CbwIrp.pfIrpComplete = MGC_BotCbwComplete;
                 }
             }
         }
@@ -1065,9 +1087,15 @@ static uint32_t MGC_MsdBotDataTransferComplete(void *pPrivateData,
     MUSB_pfHfiTransferComplete pfTransferComplete = pVolume->pfHfiTransferComplete;
 
     /* TODO: replace divide with shift */
+#if 0
     return pfTransferComplete(pVolume->hVolume,
                               (uint16_t)(dwDataLength / pVolume->DeviceInfo.dwBlockSize));
+#else
+    pfTransferComplete(pVolume->hVolume,
+                              (uint16_t)(dwDataLength / pVolume->DeviceInfo.dwBlockSize));
 
+    return 0; //TODO!!!
+#endif
 }
 
 static MUSB_HfiStatus MGC_MsdBotReadDevice(void *pDeviceData,

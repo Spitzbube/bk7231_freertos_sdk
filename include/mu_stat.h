@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW status codes.
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_STATUS_H__
@@ -21,7 +21,7 @@
 /*
  * Status codes (bit 7 means error)
  */
-#define MGC_M_STATUS_ERROR		    0x80
+#define MGC_M_STATUS_ERROR		0x80
 #define MGC_M_STATUS_WARNING		0x40
 
 /*

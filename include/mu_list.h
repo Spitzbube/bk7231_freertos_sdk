@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Array/List Utilities API.
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_LIST_H__
@@ -22,7 +22,7 @@
 
 /**
 * MUSB_Array.
-* A "dynamic" array which can partially or completely
+* A "dynamic" array which can partially or completely 
 * use static storage.
 * This is most useful for a list whose size is likely to grow
 * but not shrink (e.g. a controller's local endpoint resources).
@@ -41,12 +41,12 @@
 */
 typedef struct
 {
-    uint_fast16_t wItemSize;
-    uint_fast16_t wStaticItemCount;
-    void *pStaticBuffer;
-    uint_fast16_t wItemCount;
-    uint_fast16_t wDynamicItemCount;
-    void *pDynamicBuffer;
+    uint16_t wItemSize;
+    uint16_t wStaticItemCount;
+    void* pStaticBuffer;
+    uint16_t wItemCount;
+    uint16_t wDynamicItemCount;
+    void* pDynamicBuffer;
 } MUSB_Array;
 
 /**
@@ -59,17 +59,17 @@ typedef struct
  * @return a non-NULL pointer on success (the given pArray if non-NULL)
  * @return NULL on failure
  */
-extern MUSB_Array *MUSB_ArrayInit(MUSB_Array *pArray,
-                                  uint_fast16_t wItemSize,
-                                  uint_fast16_t wStaticItemCount,
-                                  void *pStaticBuffer);
+extern MUSB_Array* MUSB_ArrayInit(MUSB_Array* pArray, 
+				  uint_fast16_t wItemSize,
+				  uint_fast16_t wStaticItemCount, 
+				  void* pStaticBuffer);
 
 /**
  * Count array items.
  * @param pArray array pointer
  * @return the number of items currently in the array
  */
-extern uint_fast16_t MUSB_ArrayLength(MUSB_Array *pArray);
+extern uint_fast16_t MUSB_ArrayLength(MUSB_Array* pArray);
 
 /**
  * Get an array item.
@@ -78,7 +78,7 @@ extern uint_fast16_t MUSB_ArrayLength(MUSB_Array *pArray);
  * @param wIndex the index (counting from 0)
  * @return pointer to array element or NULL if not found
  */
-extern void *MUSB_ArrayFetch(MUSB_Array *pArray, uint_fast16_t wIndex);
+extern void* MUSB_ArrayFetch(MUSB_Array* pArray, uint16_t wIndex);
 
 /**
  * Append to array.
@@ -89,7 +89,7 @@ extern void *MUSB_ArrayFetch(MUSB_Array *pArray, uint_fast16_t wIndex);
  * @return TRUE on success
  * @return FALSE on failure (out of memory)
  */
-extern uint8_t MUSB_ArrayAppend(MUSB_Array *pArray, const void *pItem);
+extern uint8_t MUSB_ArrayAppend(MUSB_Array* pArray, const void* pItem);
 
 /**
  * Remove all items from an array.
@@ -97,7 +97,7 @@ extern uint8_t MUSB_ArrayAppend(MUSB_Array *pArray, const void *pItem);
  * @memo clear array
  * @param pArray array pointer
  */
-extern void MUSB_ArrayClear(MUSB_Array *pArray);
+extern void MUSB_ArrayClear(MUSB_Array* pArray);
 
 /**
  * MUSB_LinkedList (linked list).
@@ -108,8 +108,8 @@ extern void MUSB_ArrayClear(MUSB_Array *pArray);
  */
 typedef struct _MUSB_LinkedList
 {
-    void *pItem;
-    struct _MUSB_LinkedList *pNext;
+    void* pItem;
+    struct _MUSB_LinkedList* pNext;
     unsigned long dwCount;
 } MUSB_LinkedList;
 
@@ -118,7 +118,7 @@ typedef struct _MUSB_LinkedList
  * Initialize the given list so it is ready for use.
  * @param pList list pointer
  */
-extern void MUSB_ListInit(MUSB_LinkedList *pList);
+extern void MUSB_ListInit(MUSB_LinkedList* pList);
 
 /**
  * Count list items.
@@ -128,7 +128,7 @@ extern void MUSB_ListInit(MUSB_LinkedList *pList);
  * @param pList list pointer
  * @return number of items in list
  */
-extern uint_fast16_t MUSB_ListLength(MUSB_LinkedList *pList);
+extern uint16_t MUSB_ListLength(MUSB_LinkedList* pList);
 
 /**
  * Find list item.
@@ -139,7 +139,7 @@ extern uint_fast16_t MUSB_ListLength(MUSB_LinkedList *pList);
  * @return item pointer if found
  * @return NULL if no such item
  */
-extern void *MUSB_ListFindItem(MUSB_LinkedList *pList, uint_fast16_t wIndex);
+extern void* MUSB_ListFindItem(MUSB_LinkedList* pList, uint_fast16_t wIndex);
 
 /**
  * Find list record.
@@ -150,8 +150,8 @@ extern void *MUSB_ListFindItem(MUSB_LinkedList *pList, uint_fast16_t wIndex);
  * @return record pointer if found
  * @return NULL if no such item
  */
-extern MUSB_LinkedList *MUSB_ListFindRecord(MUSB_LinkedList *pList,
-        uint_fast16_t wIndex);
+extern MUSB_LinkedList* MUSB_ListFindRecord(MUSB_LinkedList* pList, 
+					    uint_fast16_t wIndex);
 
 /**
  * Append list.
@@ -165,8 +165,8 @@ extern MUSB_LinkedList *MUSB_ListFindRecord(MUSB_LinkedList *pList,
  * @return TRUE on success
  * @return FALSE on failure (no such list or out of memory)
  */
-extern uint8_t MUSB_ListAppendItem(MUSB_LinkedList *pList, void *pItem,
-                                   unsigned long dwCount);
+extern uint8_t MUSB_ListAppendItem(MUSB_LinkedList * pList, void * pItem, 
+				   unsigned long dwCount);
 
 /**
  * Insert into list.
@@ -181,9 +181,9 @@ extern uint8_t MUSB_ListAppendItem(MUSB_LinkedList *pList, void *pItem,
  * @return TRUE on success
  * @return FALSE on failure (no such list or out of memory)
  */
-extern uint8_t MUSB_ListInsertItem(MUSB_LinkedList *pList,
-                                   uint_fast16_t wItemIndex,
-                                   void *pItem, unsigned long dwCount);
+extern uint8_t MUSB_ListInsertItem(MUSB_LinkedList* pList, 
+				   uint_fast16_t wItemIndex, 
+				   void* pItem, unsigned long dwCount);
 
 /**
  * Remove from list.
@@ -194,6 +194,6 @@ extern uint8_t MUSB_ListInsertItem(MUSB_LinkedList *pList,
  * @param pList list pointer
  * @param pItem item pointer
  */
-extern void MUSB_ListRemoveItem(MUSB_LinkedList *pList, void *pItem);
+extern void MUSB_ListRemoveItem(MUSB_LinkedList* pList, void* pItem);
 
 #endif	/* multiple inclusion protection */

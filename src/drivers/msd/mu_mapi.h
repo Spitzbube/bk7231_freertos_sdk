@@ -17,7 +17,7 @@
  * Prototypes for MSD class driver API
  * $Revision: 1.11 $
  */
-#include "include.h"
+//#include "include.h"
 #include "mu_mpcsi.h"
 
 /* Debug message values for success and error */
@@ -80,7 +80,7 @@ typedef struct
     MGC_MsdProtocol *pProtocol;
 } MGC_MsdDevice;
 
-#if CFG_SUPPORT_MSD
+#if 1 //CFG_SUPPORT_MSD
 /**
  * Fill an array with the targetted peripheral list entry appropriate
  * for the mass-storage class driver, ending with the MUSB_TARGET_ACCEPT.

@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW USB Software Platform Stack API.
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_STACK_H__
@@ -48,10 +48,10 @@ typedef struct
  * @return a non-NULL pointer on success (the given pStack if non-NULL)
  * @return NULL on failure
  */
-extern MUSB_Stack *MUSB_StackInit(MUSB_Stack *pStack,
-                                  uint_fast16_t wItemSize,
-                                  uint_fast16_t wStaticItemCount,
-                                  void *pStaticBuffer);
+extern MUSB_Stack* MUSB_StackInit(MUSB_Stack* pStack, 
+				  uint_fast16_t wItemSize,
+				  uint_fast16_t wStaticItemCount, 
+				  void* pStaticBuffer);
 
 /**
  * Remove all items from a stack.
@@ -60,21 +60,21 @@ extern MUSB_Stack *MUSB_StackInit(MUSB_Stack *pStack,
  * @return TRUE on success
  * @return FALSE on failure (invalid stack)
  */
-extern uint8_t MUSB_StackClear(MUSB_Stack *pStack);
+extern uint8_t MUSB_StackClear(MUSB_Stack* pStack);
 
 /**
  * Count stack items.
  * @param pStack stack pointer
  * @return the number of items currently on the stack
  */
-extern uint_fast16_t MUSB_StackSize(MUSB_Stack *pStack);
+extern uint_fast16_t MUSB_StackSize(MUSB_Stack* pStack);
 
 /**
  * Get the top stack item, without removing it.
  * @param pStack stack pointer
  * @return pointer to element or NULL if not found
  */
-extern void *MUSB_StackTop(MUSB_Stack *pStack);
+extern void* MUSB_StackTop(MUSB_Stack* pStack);
 
 /**
  * Pop an item from the stack.
@@ -85,7 +85,7 @@ extern void *MUSB_StackTop(MUSB_Stack *pStack);
  * @return TRUE on success
  * @return FALSE on failure (invalid or empty stack)
  */
-extern uint8_t MUSB_StackPop(MUSB_Stack *pStack, void *pItem);
+extern uint8_t MUSB_StackPop(MUSB_Stack* pStack, void* pItem);
 
 /**
  * Push an item onto the stack.
@@ -96,6 +96,6 @@ extern uint8_t MUSB_StackPop(MUSB_Stack *pStack, void *pItem);
  * @return TRUE on success
  * @return FALSE on failure (invalid or full stack)
  */
-extern uint8_t MUSB_StackPush(MUSB_Stack *pStack, const void *pItem);
+extern uint8_t MUSB_StackPush(MUSB_Stack* pStack, const void* pItem);
 
 #endif	/* multiple inclusion protection */

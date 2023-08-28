@@ -9,10 +9,12 @@
 *  LICENSORS AND IS SUBJECT TO LICENSE TERMS.                    *
 *                                                                *
 ******************************************************************/
-#include "include.h"
+//#include "include.h"
+
+#pragma thumb
 
 #include "mu_arch.h"
-#include "mu_impl.h"
+//#include "mu_impl.h"
 #include "mu_cdi.h"
 #include "mu_descs.h"
 #include "mu_diag.h"
@@ -23,8 +25,11 @@
 #include "mu_msd.h"
 #include "mu_mapi.h"
 
-#if CFG_SUPPORT_MSD
+#define MUSB_PRT
+
+#if 1 //CFG_SUPPORT_MSD
 extern MGC_MsdCmdSet *MGC_GetScsiCmdSet(void);
+extern MGC_MsdCmdSet *sub_2347c120(void);
 extern MGC_MsdProtocol *MGC_CreateBotInstance(MUSB_Device *pDevice,
         MUSB_BusHandle hBus,
         const MUSB_InterfaceDescriptor *pIfaceDesc,
@@ -39,6 +44,8 @@ static uint32_t MGC_MsdSetConfigCallback(void *pContext, MUSB_ControlIrp *pContr
 /**************************** GLOBALS *****************************/
 
 static uint32_t MGC_aMsdTimerResolution[1] = { 10 };
+
+#if 0
 
 static const uint8_t MGC_Msd_PeripheralList[] =
 {
@@ -75,8 +82,10 @@ static const uint8_t MGC_aMsdPeripheralList2[] =
     0 /* placeholder for driver index */
 };
 
+#endif
+
 /** Mass Storage device driver */
-MUSB_DeviceDriver MGC_MsdDeviceDriver =
+MUSB_DeviceDriver MGC_MsdDeviceDriver = //23494318
 {
     NULL,
     sizeof(MGC_aMsdTimerResolution) / sizeof(uint32_t),
@@ -86,6 +95,8 @@ MUSB_DeviceDriver MGC_MsdDeviceDriver =
     NULL,
     NULL,
 };
+
+#if 0
 
 /*************************** FUNCTIONS ****************************/
 
@@ -123,6 +134,8 @@ MUSB_DeviceDriver *MUSB_GetStorageClassDriver(void)
     return &MGC_MsdDeviceDriver;
 }
 
+#endif
+
 /**
  * Allocate per-device data
  */
@@ -147,6 +160,7 @@ static MGC_MsdDevice *MGC_MsdDeviceInit(MUSB_Device *pUsbDevice)
 }
 
 /** This function is called when Mass Storage device is connected.*/
+/* 234679e0 - todo */
 uint8_t
 MUSB_MsdConnect(  void              *pPrivateData,
                   MUSB_BusHandle     hBus,
@@ -172,6 +186,7 @@ MUSB_MsdConnect(  void              *pPrivateData,
     /* find first interface with supported subclass/protocol combination */
     for(bIndex = 0; bIndex < pConfig->bNumInterfaces; bIndex++)
     {
+    	//loc_234679fa
         /* assume no alternates */
         pIface = MUSB_FindInterfaceDescriptor(pConfig, bIndex, 0);
         if(pIface && (MUSB_CLASS_MASS_STORAGE == pIface->bInterfaceClass) &&
@@ -213,6 +228,11 @@ MUSB_MsdConnect(  void              *pPrivateData,
                     pCmdSet = MGC_GetScsiCmdSet();
                     break;
 
+                case MGC_MSD_SFF_8070i_SUBCLASS: //5:
+                	//loc_23467a6a
+                	pCmdSet = sub_2347c120();
+                	break;
+
                 default:
                     continue;
                 }
@@ -221,7 +241,7 @@ MUSB_MsdConnect(  void              *pPrivateData,
             }
         }
     }
-
+    //0x23467a92
     if(pProtocol)
     {
         pMsdDevice = MGC_MsdDeviceInit(pUsbDevice);
@@ -252,6 +272,7 @@ MUSB_MsdConnect(  void              *pPrivateData,
 }/* End MUSB_MsdConnect() */
 
 /** Disconnect Handler for Mass Storage Device Driver */
+/* 23467ae0 - complete */
 void MUSB_MsdDisconnect (void           *pPrivateData,
                          MUSB_BusHandle  hBus,
                          MUSB_Device    *pUsbDevice)
@@ -347,5 +368,6 @@ static uint32_t MGC_MsdSetConfigCallback(void *pContext, MUSB_ControlIrp *pContr
     }
     return 0;
 }
+
 #endif // CFG_SUPPORT_MSD
 // eof

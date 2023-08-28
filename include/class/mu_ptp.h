@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW PTP (Picture Transfer Protocol) definitions.
- * $Revision: 1.1 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_PTP_H__

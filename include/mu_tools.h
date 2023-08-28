@@ -13,7 +13,7 @@
 /*
  * MUSB-MicroSW handling of toolset-specific means to define
  * C'99 types, TRUE, FALSE, NULL, MUSB_MIN and MUSB_MAX.
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_TOOLSET_H__
@@ -24,7 +24,7 @@
  * If build env. doesn't provide this, make one with definitions
  * for your platform's types for signed/unsigned 8, 16, 32-bit
  * integers (int8_t, uint8_t, int16_t, uint16_t, etc.)
- * Also, if your compiler doesn't support const,
+ * Also, if your compiler doesn't support const, 
  * #define const
  * or preprocess with COMPILER_NO_CONST defined
  */
@@ -34,20 +34,20 @@
 #include "stdint.h"
 #endif
 
-#ifdef COMPILER_NO_CONST
-#define const
-#endif
-
 #ifndef TRUE
-#define TRUE                      1
+#define TRUE 1
 #endif
 
 #ifndef FALSE
-#define FALSE                     0
+#define FALSE 0
 #endif
 
 #ifndef NULL
-#define NULL                     (0L)
+#define NULL (void*)0
+#endif
+
+#ifdef COMPILER_NO_CONST
+#define const
 #endif
 
 /*
@@ -75,11 +75,10 @@
 #ifdef _MSC_VER
 
 /* Microsoft compiler */
+
 #define MUSB_INT_VECTOR
 #define MUSB_STDLIB
 
 #endif	/* Microsoft compiler */
 
 #endif	/* multiple inclusion protection */
-// eof
-

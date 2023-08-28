@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Keyboard Input Interface (KII).
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_KII_H__
@@ -20,7 +20,7 @@
 
 #include "mu_tools.h"
 
-/**
+/** 
  * Introduction to Keyboard Input Interface.
  * The functions herein can be implemented by an OS to allow
  * the Mentor USB HID keyboard driver to be hooked into the OS'
@@ -29,7 +29,7 @@
  * The callbacks herein are implemented by the Mentor driver,
  * exposing the functionality needed by an OS to use the keyboard.
  * The above could also be applied to a custom, non-OS environment.
- * Finally, an implementation can be created solely for demonstration purposes
+ * Finally, an implementation can be created solely for demonstration purposes 
  * (to avoid relying on platforms with keyboard support,
  * and/or to allow the Mentor USB HID keyboard driver to be tested).
  * <p>
@@ -44,7 +44,7 @@
 
 /************************* KII CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_KiiModifierKey.
  * KII modifier key.
  */
@@ -66,7 +66,7 @@ typedef enum
     MUSB_KII_KEY_ALT_GRAPH
 } MUSB_KiiModifierKey;
 
-/**
+/** 
  * MUSB_KiiSpecialKey.
  * KII special key.
  */
@@ -128,7 +128,7 @@ typedef enum
     MUSB_KII_KEY_BREAK
 } MUSB_KiiSpecialKey;
 
-/**
+/** 
  * MUSB_KiiLed.
  * KII LED.
  */
@@ -144,7 +144,7 @@ typedef enum
     MUSB_KII_LED_COMPOSE
 } MUSB_KiiLed;
 
-/**
+/** 
  * MUSB_KiiStatus.
  * KII Operation Status.
  */
@@ -167,19 +167,19 @@ typedef enum
  * Device information.
  * A HID keyboard driver fills this with any information
  * it knows before calling MUSB_KiiAddDevice.
- *
+ * 
  * @field wLanguage USB language ID for the keyboard's layout
- *
+ * 
  * @field wVendorId USB VID,
  * for the KII implementation's use in generating a device name
- *
+ * 
  * @field wProductId USB PID,
  * for the KII implementation's use in generating a device name
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the KII implementation's use in generating a device name
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the KII implementation's use in generating a device name
  */
 typedef struct
@@ -199,24 +199,24 @@ typedef struct
  * @param bLight TRUE to light the LED, FALSE to unlight it
  * @return status code
  */
-typedef MUSB_KiiStatus (*MUSB_pfKiiSetLed)(void *pDeviceData,
-        uint8_t bIndex, uint8_t bLight);
+typedef MUSB_KiiStatus (*MUSB_pfKiiSetLed)(void* pDeviceData,
+    uint8_t bIndex, uint8_t bLight);
 
 /**
  * MUSB_KiiDevice.
  * Device driver callbacks.
- * @field pPrivateData device driver private data;
+ * @field pPrivateData device driver private data; 
  * not to be interpreted by the KII implementation
  * @field pfSetLed set-LED callback
  */
-typedef struct
+typedef struct 
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfKiiSetLed pfSetLed;
 } MUSB_KiiDevice;
 
 /** Handle created by the KII implementation */
-typedef void *MUSB_KiiDeviceHandle;
+typedef void* MUSB_KiiDeviceHandle;
 
 /************************* KII FUNCTIONS **************************/
 
@@ -225,11 +225,11 @@ typedef void *MUSB_KiiDeviceHandle;
  * A HID keyboard driver calls this to inform the KII implementation
  * that a new device is being used.
  * The KII implementation uses the device information to determine if
- * it can support the device,
+ * it can support the device, 
  * and prepare the system to accept position information from it.
- * Error messages on failure are the KII implementation's responsibility,
+ * Error messages on failure are the KII implementation's responsibility, 
  * since the error messaging mechanism is OS-dependent.
- *
+ * 
  * @param phDevice where to store a device handle on success
  * @param pInfo pointer to device information struct
  * @param pDevice pointer to struct with callbacks to access the device
@@ -237,8 +237,8 @@ typedef void *MUSB_KiiDeviceHandle;
  * @return MUSB_KII_ERROR_UNSUPPORTED_DEVICE if the device cannot
  * be supported (e.g. not enough buttons)
  */
-extern MUSB_KiiStatus MUSB_KiiAddDevice(MUSB_KiiDeviceHandle *phDevice,
-                                        const MUSB_KiiDeviceInfo *pInfo, MUSB_KiiDevice *pDevice);
+extern MUSB_KiiStatus MUSB_KiiAddDevice(MUSB_KiiDeviceHandle* phDevice,
+    const MUSB_KiiDeviceInfo* pInfo, MUSB_KiiDevice* pDevice);
 
 /**
  * The state of modifier keys has changed.
@@ -250,8 +250,8 @@ extern MUSB_KiiStatus MUSB_KiiAddDevice(MUSB_KiiDeviceHandle *phDevice,
  * (depressed)
  * @see #MUSB_KiiModifierKey
  */
-extern void MUSB_KiiModifiersChanged(MUSB_KiiDeviceHandle hDevice,
-                                     uint32_t dwModifierMask);
+extern void MUSB_KiiModifiersChanged(MUSB_KiiDeviceHandle hDevice, 
+    uint32_t dwModifierMask);
 
 /**
  * A character-key has been pressed.
@@ -260,8 +260,8 @@ extern void MUSB_KiiModifiersChanged(MUSB_KiiDeviceHandle hDevice,
  * @param hDevice a device handle as filled by a successful MUSB_KiiAddDevice
  * @param wCode UNICODE character
  */
-extern void MUSB_KiiCharacterKeyPressed(MUSB_KiiDeviceHandle hDevice,
-                                        uint16_t wCode);
+extern void MUSB_KiiCharacterKeyPressed(MUSB_KiiDeviceHandle hDevice, 
+    uint16_t wCode);
 
 /**
  * A character-key has been released.
@@ -270,8 +270,8 @@ extern void MUSB_KiiCharacterKeyPressed(MUSB_KiiDeviceHandle hDevice,
  * @param hDevice a device handle as filled by a successful MUSB_KiiAddDevice
  * @param wCode UNICODE character
  */
-extern void MUSB_KiiCharacterKeyReleased(MUSB_KiiDeviceHandle hDevice,
-        uint16_t wCode);
+extern void MUSB_KiiCharacterKeyReleased(MUSB_KiiDeviceHandle hDevice, 
+    uint16_t wCode);
 
 /**
  * A special key has been pressed.
@@ -280,8 +280,8 @@ extern void MUSB_KiiCharacterKeyReleased(MUSB_KiiDeviceHandle hDevice,
  * @param hDevice a device handle as filled by a successful MUSB_KiiAddDevice
  * @param wCode UNICODE character
  */
-extern void MUSB_KiiSpecialKeyPressed(MUSB_KiiDeviceHandle hDevice,
-                                      MUSB_KiiSpecialKey Key);
+extern void MUSB_KiiSpecialKeyPressed(MUSB_KiiDeviceHandle hDevice, 
+    MUSB_KiiSpecialKey Key);
 
 /**
  * A special key has been released.
@@ -290,8 +290,8 @@ extern void MUSB_KiiSpecialKeyPressed(MUSB_KiiDeviceHandle hDevice,
  * @param hDevice a device handle as filled by a successful MUSB_KiiAddDevice
  * @param wCode UNICODE character
  */
-extern void MUSB_KiiSpecialKeyReleased(MUSB_KiiDeviceHandle hDevice,
-                                       MUSB_KiiSpecialKey Key);
+extern void MUSB_KiiSpecialKeyReleased(MUSB_KiiDeviceHandle hDevice, 
+    MUSB_KiiSpecialKey Key);
 
 /**
  * A keyboard was removed.

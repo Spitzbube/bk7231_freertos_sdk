@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW HID (Human Interface Device) definitions.
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_HID_H__

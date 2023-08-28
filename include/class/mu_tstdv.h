@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW compliance test device definitions.
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef	__MUSB_COMPLIANCE_DEVICE_H__
@@ -42,7 +42,7 @@
 #define MUSB_DIAG_REQ_VEN_DO_DISCONNECT		0x52
 
 /**
- * get entire endpoint capabilities table
+ * get entire endpoint capabilities table 
  * (first byte returned is length of table)
  */
 #define MUSB_DIAG_REQ_VEN_GET_EP_TABLE		0x53
@@ -152,7 +152,7 @@ typedef struct
  * @field IsochCapabilities capabilities as an isochronous endpoint
  * @field ControlCapabilities capabilities as a control endpoint
  */
-typedef struct
+typedef struct 
 {
     uint8_t bAddress;
     uint8_t bLoopbackIndex;

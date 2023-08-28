@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW DFU (Device Firmware Upgrade) definitions.
- * $Revision: 1.1 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_DFU_H__
@@ -20,8 +20,8 @@
 
 #include "mu_tools.h"
 
-/*
- * subclass/protocol (class=MUSB_CLASS_APP_SPEC) -
+/* 
+ * subclass/protocol (class=MUSB_CLASS_APP_SPEC) - 
  * in normal mode, used in interface; in DFU mode, used in device
  */
 #define MGC_DFU_SUBCLASS          0x01
@@ -52,7 +52,7 @@
  * @field bmAttributes see MGC_S_DFU_ATTR_*
  * @field wDetachTimeout timeout, in ms, between DFU_DETACH request
  * and USB reset, before device terminates reconfiguration and
- * reverts to normal operation
+ * reverts to normal operation  
  * @field wTransferSize the maximum number of bytes the device can accept
  * per control write
  */

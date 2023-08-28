@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW mass-storage definitions.
- * $Revision: 1.5 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_MSD_H__

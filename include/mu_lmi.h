@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Live-Media Interface (LMI).
- * $Revision: 1.4 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_LMI_H__
@@ -20,7 +20,7 @@
 
 #include "mu_tools.h"
 
-/**
+/** 
  * Introduction to Live Media Interface.
  * The functions herein can be implemented by an OS to allow
  * the Mentor USB live media drivers to be hooked into the OS'
@@ -29,14 +29,14 @@
  * The callbacks herein are implemented by the Mentor drivers,
  * exposing the functionality needed by an OS to use the device.
  * The above could also be applied to a custom, non-OS environment.
- * Finally, an implementation can be created solely for demonstration purposes
+ * Finally, an implementation can be created solely for demonstration purposes 
  * (to avoid relying on platforms with live media support,
  * and/or to allow the Mentor USB drivers to be tested).
  */
 
 /************************* LMI CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_LmiMediaType.
  * LMI Media Type.
  */
@@ -54,7 +54,7 @@ typedef enum
     MUSB_LMI_MEDIA_VIDEO_SINK
 } MUSB_LmiMediaType;
 
-/**
+/** 
  * MUSB_LmiChannelType.
  * LMI Channel Type.
  */
@@ -80,7 +80,7 @@ typedef enum
     MUSB_LMI_CHANNEL_UPPER
 } MUSB_LmiChannelType;
 
-/**
+/** 
  * MUSB_LmiControlType.
  * LMI control type.
  */
@@ -108,7 +108,7 @@ typedef enum
     MUSB_LMI_CONTROL_SATURATION
 } MUSB_LmiControlType;
 
-/**
+/** 
  * MUSB_LmiColorEncoding.
  * LMI color encoding.
  */
@@ -122,7 +122,7 @@ typedef enum
     MUSB_LMI_COLOR_YUV
 } MUSB_LmiColorEncoding;
 
-/**
+/** 
  * MUSB_LmiNameQuery.
  * LMI name query.
  */
@@ -150,7 +150,7 @@ typedef enum
     MUSB_LMI_NAME_VIDEO_FORMAT
 } MUSB_LmiNameQuery;
 
-/**
+/** 
  * MUSB_LmiStatus.
  * LMI Operation Status.
  */
@@ -173,7 +173,7 @@ typedef enum
 /*************************** LMI TYPES ****************************/
 
 /** Handle created by the LMI implementation */
-typedef void *MUSB_LmiDeviceHandle;
+typedef void* MUSB_LmiDeviceHandle;
 
 /**
  * MUSB_LmiControlCapability.
@@ -181,7 +181,7 @@ typedef void *MUSB_LmiDeviceHandle;
  * @field ControlType type of control
  * @field bMagnitude the number of significant bits in the control's value.
  * Control values are in abstract scaled units, expressed as unsigned numbers.
- * If a control has a natural "center" (e.g. balance),
+ * If a control has a natural "center" (e.g. balance), 
  * its value corresponds to the number with MSb=0 and other bits=1
  * (e.g. 127 for an 8-bit-magnitude control).
  */
@@ -205,7 +205,7 @@ typedef struct
     MUSB_LmiMediaType MediaType;
     MUSB_LmiChannelType ChannelType;
     uint8_t bControlCount;
-    const MUSB_LmiControlCapability *aControlCapabilities;
+    const MUSB_LmiControlCapability* aControlCapabilities;
 } MUSB_LmiChannelInfo;
 
 /**
@@ -224,7 +224,7 @@ typedef struct
  * MUSB_LmiAudioSamplingCapabilities.
  * Capabilities for transferring real-time audio samples.
  * @field bChannelCount number of channels
- * @field aChannelInfo array with bChannelCount elements,
+ * @field aChannelInfo array with bChannelCount elements, 
  * each with information about a channel
  * @field bSamplingFormatCount the number of sampling formats supported
  * @field aSamplingFormats array of bSamplingFormatCount elements,
@@ -236,11 +236,11 @@ typedef struct
 typedef struct
 {
     uint8_t bChannelCount;
-    const MUSB_LmiChannelInfo *aChannelInfo;
+    const MUSB_LmiChannelInfo* aChannelInfo;
     uint8_t bSamplingFormatCount;
-    const MUSB_LmiAudioSamplingFormat *aSamplingFormats;
+    const MUSB_LmiAudioSamplingFormat* aSamplingFormats;
     uint8_t bControlCount;
-    const MUSB_LmiControlCapability *aControlCapabilities;
+    const MUSB_LmiControlCapability* aControlCapabilities;
 } MUSB_LmiAudioSamplingCapabilities;
 
 /**
@@ -267,7 +267,7 @@ typedef struct
  * MUSB_LmiVideoSamplingCapabilities.
  * Capabilities for transferring real-time video samples.
  * @field bChannelCount number of channels
- * @field aChannelInfo array with bChannelCount elements,
+ * @field aChannelInfo array with bChannelCount elements, 
  * each with information about a channel
  * @field bSamplingFormatCount the number of sampling formats supported
  * @field aSamplingFormats array of bSamplingFormatCount elements,
@@ -279,11 +279,11 @@ typedef struct
 typedef struct
 {
     uint8_t bChannelCount;
-    const MUSB_LmiChannelInfo *aChannelInfo;
+    const MUSB_LmiChannelInfo* aChannelInfo;
     uint8_t bSamplingRateCount;
-    const MUSB_LmiVideoSamplingFormat *aSamplingFormats;
+    const MUSB_LmiVideoSamplingFormat* aSamplingFormats;
     uint8_t bControlCount;
-    const MUSB_LmiControlCapability *aControlCapabilities;
+    const MUSB_LmiControlCapability* aControlCapabilities;
 } MUSB_LmiVideoSamplingCapabilities;
 
 /**
@@ -294,7 +294,7 @@ typedef struct
  * @param wSamplesTransferred the number of samples transferred
  */
 typedef void (*MUSB_pfLmiTransferProgress)(MUSB_LmiDeviceHandle hDevice,
-        MUSB_LmiStatus Status, uint16_t wSamplesTransferred);
+    MUSB_LmiStatus Status, uint16_t wSamplesTransferred);
 
 /**
  * MUSB_LmiTransfer.
@@ -310,7 +310,7 @@ typedef struct
     uint16_t wSampleCount;
     uint16_t wCallbackInterval;
     MUSB_pfLmiTransferProgress pfTransferProgress;
-    uint8_t *pBuffer;
+    uint8_t* pBuffer;
 } MUSB_LmiTransfer;
 
 /**
@@ -318,29 +318,29 @@ typedef struct
  * Device information.
  * A live media device driver fills this with any information
  * it knows before calling MUSB_LmiAddDevice.
- *
+ * 
  * @field pAudioSamplingCapabilities pointer to struct giving
  * audio sampling capabilities, or NULL if the device has no audio capability
- *
+ * 
  * @field pVideoSamplingCapabilities pointer to struct giving
  * video sampling capabilities, or NULL if the device has no video capability
- *
+ * 
  * @field wVendorId USB VID,
  * for the LMI implementation's use in generating channel names
- *
+ * 
  * @field wProductId USB PID,
  * for the LMI implementation's use in generating channel names
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the LMI implementation's use in generating channel names
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the LMI implementation's use in generating channel names
  */
 typedef struct
 {
-    const MUSB_LmiAudioSamplingCapabilities *pAudioSamplingCapabilities;
-    const MUSB_LmiVideoSamplingCapabilities *pVideoSamplingCapabilities;
+    const MUSB_LmiAudioSamplingCapabilities* pAudioSamplingCapabilities;
+    const MUSB_LmiVideoSamplingCapabilities* pVideoSamplingCapabilities;
     uint16_t wVendorId;
     uint16_t wProductId;
     uint16_t bcdDevice;
@@ -356,14 +356,14 @@ typedef struct
  * @param bChannel for channel-specific queries,
  * the index of the associated channel
  * @param wLanguageCode a language/country code as per USB 2.0
- * @param pName storage for a UNICODE name,
+ * @param pName storage for a UNICODE name, 
  * filled and terminated with a wide-NUL on success
  * @param bNameLength size, in 16-bit UNICODE characters, of the pName buffer
  * @return status code
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiGetName)(void *pDeviceData,
-        MUSB_LmiNameQuery NameQuery, uint8_t bIndex, uint8_t bChannel,
-        uint16_t wLanguageCode, uint16_t *pName, uint8_t bNameLength);
+typedef MUSB_LmiStatus (*MUSB_pfLmiGetName)(void* pDeviceData,
+    MUSB_LmiNameQuery NameQuery, uint8_t bIndex, uint8_t bChannel,
+    uint16_t wLanguageCode, uint16_t* pName, uint8_t bNameLength);
 
 /**
  * Get the current value for an audio control
@@ -376,8 +376,8 @@ typedef MUSB_LmiStatus (*MUSB_pfLmiGetName)(void *pDeviceData,
  * For example, a 9-bit-magnitude control needs two bytes; no more, no less.
  * On success, an unsigned number in the host's byte order is stored here.
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiGetAudioControl)(void *pDeviceData,
-        uint8_t bIndex, uint8_t bChannel, uint8_t *pValue);
+typedef MUSB_LmiStatus (*MUSB_pfLmiGetAudioControl)(void* pDeviceData,
+    uint8_t bIndex, uint8_t bChannel, uint8_t* pValue);
 
 /**
  * Set a new value for an audio control
@@ -387,8 +387,8 @@ typedef MUSB_LmiStatus (*MUSB_pfLmiGetAudioControl)(void *pDeviceData,
  * the index of the associated channel
  * @param pValue pointer to the new value in host byte order
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiSetAudioControl)(void *pDeviceData,
-        uint8_t bIndex, uint8_t bChannel, const uint8_t *pValue);
+typedef MUSB_LmiStatus (*MUSB_pfLmiSetAudioControl)(void* pDeviceData,
+    uint8_t bIndex, uint8_t bChannel, const uint8_t* pValue);
 
 /**
  * Get the current value for a video control
@@ -401,8 +401,8 @@ typedef MUSB_LmiStatus (*MUSB_pfLmiSetAudioControl)(void *pDeviceData,
  * For example, a 9-bit-magnitude control needs two bytes; no more, no less.
  * On success, an unsigned number in the host's byte order is stored here.
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiGetVideoControl)(void *pDeviceData,
-        uint8_t bIndex, uint8_t bChannel, uint8_t *pValue);
+typedef MUSB_LmiStatus (*MUSB_pfLmiGetVideoControl)(void* pDeviceData,
+    uint8_t bIndex, uint8_t bChannel, uint8_t* pValue);
 
 /**
  * Set a new value for a video control
@@ -412,28 +412,28 @@ typedef MUSB_LmiStatus (*MUSB_pfLmiGetVideoControl)(void *pDeviceData,
  * the index of the associated channel
  * @param pValue pointer to the new value in host byte order
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiSetVideoControl)(void *pDeviceData,
-        uint8_t bIndex, uint8_t bChannel, const uint8_t *pValue);
+typedef MUSB_LmiStatus (*MUSB_pfLmiSetVideoControl)(void* pDeviceData,
+    uint8_t bIndex, uint8_t bChannel, const uint8_t* pValue);
 
 /**
  * Begin transfers to/from a live-media device.
  * @param pDeviceData pPrivateData from associated MUSB_LmiDevice
  * @return status code
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiStartTransfer)(void *pDeviceData,
-        MUSB_LmiTransfer *pAudioTransfer, MUSB_LmiTransfer *pVideoTransfer);
+typedef MUSB_LmiStatus (*MUSB_pfLmiStartTransfer)(void* pDeviceData,
+    MUSB_LmiTransfer* pAudioTransfer, MUSB_LmiTransfer* pVideoTransfer);
 
 /**
  * Stop any pending transfer to/from a live-media device.
  * @param pDeviceData pPrivateData from associated MUSB_LmiDevice
  * @return status code
  */
-typedef MUSB_LmiStatus (*MUSB_pfLmiStopTransfer)(void *pDeviceData);
+typedef MUSB_LmiStatus (*MUSB_pfLmiStopTransfer)(void* pDeviceData);
 
 /**
  * MUSB_LmiDevice.
  * Device driver callbacks (dispatch table).
- * @field pPrivateData device driver private data;
+ * @field pPrivateData device driver private data; 
  * not to be interpreted by the LMI implementation
  * @field pfGetName get-name callback
  * @field pfGetAudioControl get-audio-control callback
@@ -443,9 +443,9 @@ typedef MUSB_LmiStatus (*MUSB_pfLmiStopTransfer)(void *pDeviceData);
  * @field pfLmiStartTransfer transfer-start callback
  * @field pfLmiStartTransfer transfer-stop callback
  */
-typedef struct
+typedef struct 
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfLmiGetName pfGetName;
     MUSB_pfLmiGetAudioControl pfGetAudioControl;
     MUSB_pfLmiSetAudioControl pfSetAudioControl;
@@ -463,16 +463,16 @@ typedef struct
  * that a new device is available.
  * The LMI implementation uses the device information to determine if
  * it can support the device, and make its channels known to the system.
- * Error messages on failure are the LMI implementation's responsibility,
+ * Error messages on failure are the LMI implementation's responsibility, 
  * since the error messaging mechanism is OS-dependent.
- *
+ * 
  * @param phDevice where to store a device handle on success
  * @param pInfo pointer to device information struct
  * @param pDevice pointer to struct with callbacks to access the device
  * @return status code
  */
-extern MUSB_LmiStatus MUSB_LmiAddDevice(MUSB_LmiDeviceHandle *phDevice,
-                                        const MUSB_LmiDeviceInfo *pInfo, MUSB_LmiDevice *pDevice);
+extern MUSB_LmiStatus MUSB_LmiAddDevice(MUSB_LmiDeviceHandle* phDevice,
+    const MUSB_LmiDeviceInfo* pInfo, MUSB_LmiDevice* pDevice);
 
 /**
  * A live media device was removed.

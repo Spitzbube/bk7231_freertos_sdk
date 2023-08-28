@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW buffer-overrun-safe micro-stdio library API.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_STDIO_H__
@@ -28,7 +28,7 @@
  * @param wBufferSize size of line buffer
  * @return the number of characters stored in pBuffer, not including the NUL
  */
-extern uint16_t MUSB_GetLine(char *pBuffer, uint16_t wBufferSize);
+extern uint16_t MUSB_GetLine(char* pBuffer, uint16_t wBufferSize);
 
 /**
  * puts-analogue.
@@ -37,16 +37,16 @@ extern uint16_t MUSB_GetLine(char *pBuffer, uint16_t wBufferSize);
  * @return TRUE on success
  * @return FALSE on failure
  */
-extern uint8_t MUSB_PrintString(const char *pBuffer);
+extern uint8_t MUSB_PrintString(const char* pBuffer);
 
 /**
  * Convenience.
- * Print a string, followed by a newline,
+ * Print a string, followed by a newline, 
  * to whatever is the default output source.
  * @param pBuffer NUL-terminated ASCII string
  * @return TRUE on success
  * @return FALSE on failure
  */
-extern uint8_t MUSB_PrintLine(const char *pBuffer);
+extern uint8_t MUSB_PrintLine(const char* pBuffer);
 
 #endif	/* multiple inclusion protection */

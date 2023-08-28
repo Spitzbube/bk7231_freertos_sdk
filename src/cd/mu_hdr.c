@@ -14,11 +14,16 @@
  * MUSBMicroSW HDRC implementation.
  * $Revision: 1.89 $
  */
-#include "include.h"
+
+#pragma thumb
+
+#define MUSB_PRT
+
+//#include "include.h"
 #include "mu_impl.h"
 #include "mu_mem.h"
 
-#if CFG_USB
+#if 1 // CFG_USB
 #if defined(MUSB_HDRC) || defined(MUSB_MHDRC)
 /**
  * Undefine this to avoid embedded HSET overheads
@@ -30,7 +35,7 @@
 * Implementations of HDRC-specific functions
 */
 
-#include "hdrc_cnf.h"
+//#include "hdrc_cnf.h"
 
 #include "mu_diag.h"
 
@@ -54,6 +59,7 @@ static const uint8_t MGC_aTestPacket[] =
 /*
  * Discover HDRC FIFO configuration
  */
+/* 234663d8 / - complete */
 uint8_t MGC_HdrcInit(MGC_Port *pPort)
 {
 #ifdef MUSB_C_DYNFIFO_DEF
@@ -140,6 +146,8 @@ uint8_t MGC_HdrcInit(MGC_Port *pPort)
 #endif
 }
 
+#if 0
+
 void MGC_HdrcDynamicFifoLocation(MGC_Port *pPort,
                                  uint8_t bEnd,
                                  uint8_t bIsTx,
@@ -210,6 +218,9 @@ MGC_EndpointResource *MGC_HdrcBindDynamicEndpoint(MGC_Port *pPort,
 }
 #endif	/* dynamic FIFOs */
 
+#endif
+
+/* 23466424 / - complete */
 int MGC_HdrcIsr(void *pParam)
 {
     int result;
@@ -251,6 +262,7 @@ int MGC_HdrcIsr(void *pParam)
 /*
 * Program the HDRC to start (enable interrupts, etc.).
 */
+/* 2346646c / - complete */
 uint32_t MGC_HdrcStart(MGC_Controller *pController)
 {
     uint16_t val;
@@ -285,6 +297,7 @@ uint32_t MGC_HdrcStart(MGC_Controller *pController)
 /*
 * Program the HDRC to stop (disable interrupts, etc.).
 */
+/* 2346649c / - complete */
 uint32_t MGC_HdrcStop(MGC_Controller *pController)
 {
     uint16_t temp;
@@ -304,6 +317,8 @@ uint32_t MGC_HdrcStop(MGC_Controller *pController)
     return temp;
 }
 
+#if 0
+
 uint32_t MGC_HdrcDestroy(MGC_Controller *pController)
 {
     MGC_Port *pPort = pController->pPort;
@@ -316,7 +331,10 @@ uint32_t MGC_HdrcDestroy(MGC_Controller *pController)
     return MGC_FunctionDestroy(pPort);
 }
 
+#endif
+
 /* Fill the bus state info from the controller */
+/* 234664fa / - complete */
 uint32_t MGC_HdrcReadBusState(MGC_Port *pPort)
 {
     uint8_t devctl;
@@ -382,6 +400,7 @@ uint32_t MGC_HdrcReadBusState(MGC_Port *pPort)
 }
 
 /* Program the bus state from the port (see MGC_Port) */
+/* 2346657c - complete */
 uint32_t MGC_HdrcProgramBusState(MGC_Port *pPort)
 {
     MGC_Controller *pController = pPort->pController;
@@ -427,7 +446,11 @@ uint32_t MGC_HdrcProgramBusState(MGC_Port *pPort)
     else
     {
         nPower &= ~MGC_M_POWER_SUSPENDM;
+#if 1
+        nPower &= ~MGC_M_POWER_ENSUSPEND;
+#else
         //nPower &= ~MGC_M_POWER_ENSUSPEND; // maybe it is a issue
+#endif
     }
 
     /* high-speed? */
@@ -479,6 +502,8 @@ uint32_t MGC_HdrcProgramBusState(MGC_Port *pPort)
 
     return 0;
 }
+
+#if 0
 
 /*
 * Find the HDRC's first (host) or required (function)
@@ -1053,7 +1078,10 @@ uint32_t MGC_HdrcStartTx(MGC_Port *pPort, MGC_EndpointResource *pEnd,
     return 0;
 }
 
+#endif
+
 /* Program the HDRC to flush the given endpoint wrt the given USB direction */
+/* 23466cd2 / - complete */
 uint32_t MGC_HdrcFlushEndpoint(MGC_Port *pPort, MGC_EndpointResource *pEnd,
                                uint8_t bDir, uint8_t bReuse)
 {
@@ -1139,6 +1167,8 @@ uint32_t MGC_HdrcFlushEndpoint(MGC_Port *pPort, MGC_EndpointResource *pEnd,
 
     return 0;
 }
+
+#if 0
 
 /* Program the HDRC to set/clear the halting (stall) of an endpoint */
 uint32_t MGC_HdrcHaltEndpoint(MGC_Port *pPort, MGC_EndpointResource *pEnd,
@@ -1313,9 +1343,12 @@ uint32_t MGC_HdrcDefaultEndResponse(MGC_Port *pPort, uint8_t bStall)
     return 0;
 }
 
+#endif
+
 /*
  * Handle default endpoint interrupt
  */
+/* 23466f80 / - todo */
 uint8_t MGC_HdrcServiceDefaultEnd(MGC_Port *pPort, MGC_BsrItem *pItem)
 {
     uint16_t wCsrVal, wCount;
@@ -1834,6 +1867,8 @@ uint8_t MGC_HdrcServiceReceiveReady(MGC_Port *pPort, uint16_t wEndIndex, MGC_Bsr
     return bResult;
 }
 
+#if 0
+
 #ifdef MUSB_EHSET
 static void MGC_HdrcResetOff(void *pParam, uint16_t wTimer)
 {
@@ -1945,6 +1980,9 @@ void MGC_HdrcSetPortTestMode(MGC_Port *pPort, MUSB_HsetPortMode eMode)
 #endif
 }
 
+#endif
+
+/* 23466ea2 / - todo */
 uint8_t MGC_HdrcLoadFifo(MGC_Port *pPort, uint8_t bEnd, uint32_t dwCount, const uint8_t *pSource)
 {
     uint32_t dwIndex, dwIndex32;
@@ -1968,6 +2006,7 @@ uint8_t MGC_HdrcLoadFifo(MGC_Port *pPort, uint8_t bEnd, uint32_t dwCount, const 
     return TRUE;
 }
 
+/* 234676c6 - todo */
 uint8_t MGC_HdrcUnloadFifo(MGC_Port *pPort, uint8_t bEnd, uint32_t dwCount, uint8_t *pDest)
 {
     uint32_t dwIndex, dwIndex32;
@@ -1989,6 +2028,7 @@ uint8_t MGC_HdrcUnloadFifo(MGC_Port *pPort, uint8_t bEnd, uint32_t dwCount, uint
     return TRUE;
 }
 
+/* 23467714 / - complete */
 uint8_t MGC_HdrcUlpiVbusControl(MGC_Port *pPort, uint8_t bExtSource, uint8_t bExtIndicator)
 {
     uint8_t bVal;
@@ -2007,9 +2047,11 @@ uint8_t MGC_HdrcUlpiVbusControl(MGC_Port *pPort, uint8_t bExtSource, uint8_t bEx
     return TRUE;
 }
 
+/* 23467750 / 2347873c - complete */
 uint8_t MGC_HdrcReadUlpiReg(MGC_Port *pPort, uint8_t bAddr, uint8_t *pbData)
 {
     uint8_t bCtl = 0;
+    uint32_t r4 = 0xfffff;
     MGC_Controller *pController = pPort->pController;
     uint8_t *pBase = (uint8_t *)pController->pControllerAddressIst;
 
@@ -2026,6 +2068,11 @@ uint8_t MGC_HdrcReadUlpiReg(MGC_Port *pPort, uint8_t bAddr, uint8_t *pbData)
     while(!(MGC_M_ULPI_REGCTL_COMPLETE & bCtl))
     {
         bCtl = MGC_Read8(pBase, MGC_O_HDRC_ULPI_REGCTL);
+        r4--;
+        if (r4 == 0)
+        {
+        	return 0;
+        }
     }
     *pbData = MGC_Read8(pBase, MGC_O_HDRC_ULPI_REGDATA);
     MGC_Write8(pBase, MGC_O_HDRC_ULPI_REGCTL, 0);
@@ -2033,6 +2080,7 @@ uint8_t MGC_HdrcReadUlpiReg(MGC_Port *pPort, uint8_t bAddr, uint8_t *pbData)
     return TRUE;
 }
 
+/* 234677ac / 23478798 - todo */
 uint8_t MGC_HdrcWriteUlpiReg(MGC_Port *pPort, uint8_t bAddr, uint8_t bData)
 {
     uint8_t bCtl = 0;
@@ -2057,6 +2105,8 @@ uint8_t MGC_HdrcWriteUlpiReg(MGC_Port *pPort, uint8_t bAddr, uint8_t bData)
 
     return TRUE;
 }
+
+#if 0
 
 uint8_t MGC_HdrcDmaChannelStatusChanged(
     void *pPrivateData, uint8_t bLocalEnd, uint8_t bTransmit)
@@ -2184,6 +2234,8 @@ int MGC_HdrcDumpEndpoint(MGC_Controller *pController, MUSB_EndpointResource *pEn
 }
 
 #endif	/* diagnostics enabled */
+
+#endif
 
 #endif	/* HDRC enabled */
 #endif	/* CFG_USB */

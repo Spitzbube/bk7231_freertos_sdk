@@ -11,16 +11,16 @@
  ****************************************************************************/
 
 /*
- * MUSB-MicroSW interface for special HID (Human Interface Device)
+ * MUSB-MicroSW interface for special HID (Human Interface Device) 
  * functionality for devices supporting Communication Interface
  * Specification (CIS) version 2.0.
- * $Revision: 1.6 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_CIS_H__
 #define __MUSB_CIS_H__
 
-/**
+/** 
  * Introduction to Communication Interface Specification (CIS) support.
  * The interface herein allows a client application adhering to
  * CIS version 2.0 to communicate with CIS version 2.0 devices on USB.
@@ -45,7 +45,7 @@
 
 /*************************** CONSTANTS ****************************/
 
-/**
+/** 
  * MUSB_CisStatus.
  * CIS Operation Status.
  */
@@ -75,8 +75,8 @@ typedef enum
  */
 typedef struct
 {
-    uint16_t wSize;
-    uint8_t bId;
+	uint16_t wSize;
+	uint8_t bId;
 } MUSB_CisInfo;
 
 /**
@@ -85,39 +85,39 @@ typedef struct
  * A generic HID driver fills this with any information
  * it knows before calling the CIS client's registered
  * device-add handler.
- *
+ * 
  * @field pImplData pointer to implementation data;
  * for passing to request functions
- *
+ * 
  * @field aCommandInfo array of command information
  * @field aResponseInfo array of response information
  * @field wCommandInfoLength how many elements are in aCommandInfo
  * @field wResponseInfoLength how many elements are in aResponseInfo
  *
  * @field wLanguage USB language ID
- *
+ * 
  * @field wInputMax maximum possible input data size
  *
  * @field wVendorId USB VID,
  * for the CIS client's information (e.g. for generating a device name)
- *
+ * 
  * @field wProductId USB PID,
  * for the CIS client's information (e.g. for generating a device name)
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the CIS client's information (e.g. for generating a device name)
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the CIS client's information (e.g. for generating a device name)
  */
 typedef struct
 {
-    void *pImplData;
-    MUSB_CisInfo *aCommandInfo;
-    MUSB_CisInfo *aResponseInfo;
-    unsigned short wCommandInfoLength;
-    unsigned short wResponseInfoLength;
-    unsigned short wInputMax;
+	void* pImplData;
+	MUSB_CisInfo* aCommandInfo;
+	MUSB_CisInfo* aResponseInfo;
+	unsigned short wCommandInfoLength;
+	unsigned short wResponseInfoLength;
+	unsigned short wInputMax;
     unsigned short wLanguage;
     unsigned short wVendorId;
     unsigned short wProductId;
@@ -127,9 +127,9 @@ typedef struct
 
 /**
  * MUSB_CisClientHandle.
- * A client "handle" - an opaque pointer to client device-instance data
+ * A client "handle" - an opaque pointer to client device-instance data 
  */
-typedef void *MUSB_CisClientHandle;
+typedef void* MUSB_CisClientHandle;
 
 /**
  * Callback to a CIS client to notify it of a new CIS device
@@ -141,35 +141,35 @@ typedef void *MUSB_CisClientHandle;
  * device; this handle is passed to the client's other handlers
  */
 typedef MUSB_CisClientHandle (*MUSB_pfCisDeviceAddHandler)(
-    const MUSB_CisDeviceInfo *pDeviceInfo);
+	const MUSB_CisDeviceInfo* pDeviceInfo);
 
 /**
  * Callback to a CIS client to notify it of CIS device removal
  * @param hClient the "handle" returned by the client's device-add handler
- * for this device
+ * for this device 
  * @param pDeviceInfo pointer to device information struct
  */
 typedef void (*MUSB_pfCisDeviceRemoveHandler)(
-    MUSB_CisClientHandle hClient,
-    const MUSB_CisDeviceInfo *pDeviceInfo);
+	MUSB_CisClientHandle hClient,
+	const MUSB_CisDeviceInfo* pDeviceInfo);
 
 /**
  * Callback to a CIS client to notify it of new input from the device.
  * The handler is called only for the devices "accepted" by the client
  * (when the client returns a non-NULL handle in its device-add handler).
  * @param hClient the "handle" returned by the client's device-add handler
- * for this device
+ * for this device 
  * @param pInput input data
  * @param wLength input data length, in bytes
  * @param bChecksumOk FALSE if any packet's checksum failed; TRUE otherwise
  * @param bStatus computed status
  */
-typedef void (*MUSB_pfCisDeviceInputHandler)(
-    MUSB_CisClientHandle hClient,
-    const unsigned char *pInput,
-    unsigned short wLength,
-    unsigned char bChecksumOk,
-    MUSB_CisStatus bStatus);
+typedef void (*MUSB_pfCisDeviceInputHandler)( 
+	MUSB_CisClientHandle hClient,
+	const unsigned char* pInput, 
+	unsigned short wLength,
+	unsigned char bChecksumOk,
+	MUSB_CisStatus bStatus);
 
 /**
  * Callback to a CIS client to notify it that its last output request
@@ -177,12 +177,12 @@ typedef void (*MUSB_pfCisDeviceInputHandler)(
  * The handler is called only for the devices "accepted" by the client
  * (when the client returns a non-NULL handle in its device-add handler).
  * @param hClient the "handle" returned by the client's device-add handler
- * for this device
+ * for this device 
  * @param bStatus status of output request
  */
-typedef void (*MUSB_pfCisOutputCompleteHandler)(
-    MUSB_CisClientHandle hClient,
-    MUSB_CisStatus bStatus);
+typedef void (*MUSB_pfCisOutputCompleteHandler)( 
+	MUSB_CisClientHandle hClient,
+	MUSB_CisStatus bStatus);
 /**
  * MUSB_CisClient.
  * A CIS client
@@ -193,10 +193,10 @@ typedef void (*MUSB_pfCisOutputCompleteHandler)(
  */
 typedef struct
 {
-    MUSB_pfCisDeviceAddHandler pfDeviceAddHandler;
-    MUSB_pfCisDeviceRemoveHandler pfDeviceRemoveHandler;
-    MUSB_pfCisDeviceInputHandler pfDeviceInputHandler;
-    MUSB_pfCisOutputCompleteHandler pfOutputCompleteHandler;
+	MUSB_pfCisDeviceAddHandler pfDeviceAddHandler;
+	MUSB_pfCisDeviceRemoveHandler pfDeviceRemoveHandler;
+	MUSB_pfCisDeviceInputHandler pfDeviceInputHandler;
+	MUSB_pfCisOutputCompleteHandler pfOutputCompleteHandler;
 } MUSB_CisClient;
 
 /*************************** FUNCTIONS ****************************/
@@ -205,7 +205,7 @@ typedef struct
  * Register the CIS client
  * @param pClient pointer to client struct
  */
-extern void MUSB_CisRegisterClient(MUSB_CisClient *pClient);
+extern void MUSB_CisRegisterClient(MUSB_CisClient* pClient);
 
 /**
  * Unregister any known CIS client
@@ -219,18 +219,18 @@ extern void MUSB_CisUnregisterClient(void);
  * @param wCmdLength length of command
  */
 extern MUSB_CisStatus MUSB_CisSendCommand(
-    void *pImplData,
-    const unsigned char *pCommand,
-    unsigned short wCmdLength);
-
+	void* pImplData, 
+	const unsigned char* pCommand, 
+	unsigned short wCmdLength);
+	
 /**
  * Send a raw CIS message to a supported USB device.
  * Use this function if the message contains multiple commands.
  * This function packetizes the message as per the HID
- * requirements (it determines a suitable HID report ID,
+ * requirements (it determines a suitable HID report ID, 
  * and packetizes it with appropriate Link Control Bytes [LCBs]
  * and zero-padding as necessary).
- * This means the caller's message must include the device ID,
+ * This means the caller's message must include the device ID, 
  * followed by one or more set of {payload length, payload, checksum}.
  * @param pImplData implementation data pointer from device-info struct
  * @param pMessage pointer to message data
@@ -238,9 +238,9 @@ extern MUSB_CisStatus MUSB_CisSendCommand(
  * @param bEnd TRUE when this is the last message in a command
  */
 extern MUSB_CisStatus MUSB_CisSendRawMessage(
-    void *pImplData,
-    const unsigned char *pMessage,
-    unsigned short wMsgLength,
-    unsigned char bEnd);
-
+	void* pImplData, 
+	const unsigned char* pMessage, 
+	unsigned short wMsgLength, 
+	unsigned char bEnd);
+	
 #endif	/* multiple inclusion protection */

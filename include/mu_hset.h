@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW High-Speed Electrical Test (HSET) Interface.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_HSET_H__
@@ -108,7 +108,7 @@ typedef enum
 /************************** HSET TYPES ****************************/
 
 /** Opaque handle to port for HSET purposes */
-typedef void *MUSB_HsetPort;
+typedef void* MUSB_HsetPort;
 
 /**
  * MUSB_HsetDeviceInfo.
@@ -117,9 +117,9 @@ typedef void *MUSB_HsetPort;
  * @field pDeviceDescriptor pointer to device descriptor
  * @field bBusAddress address assigned during enumeration
  */
-typedef struct
+typedef struct 
 {
-    const MUSB_DeviceDescriptor *pDeviceDescriptor;
+    const MUSB_DeviceDescriptor* pDeviceDescriptor;
     uint8_t bBusAddress;
 } MUSB_HsetDeviceInfo;
 
@@ -129,8 +129,8 @@ typedef struct
  * @param eStatus status
  * @see #MUSB_HsetPortStart
  */
-typedef void (*MUSB_pfHsetStatus)(MUSB_HsetPort hPort,
-                                  MUSB_HsetStatus eStatus);
+typedef void (*MUSB_pfHsetStatus)(MUSB_HsetPort hPort, 
+				  MUSB_HsetStatus eStatus);
 
 /**
  * HSET log callback.
@@ -138,8 +138,8 @@ typedef void (*MUSB_pfHsetStatus)(MUSB_HsetPort hPort,
  * @param pLine a line of diagnostic information
  * @see #MUSB_HsetPortStart
  */
-typedef void (*MUSB_pfHsetLog)(MUSB_HsetPort hPort,
-                               const char *pLine);
+typedef void (*MUSB_pfHsetLog)(MUSB_HsetPort hPort, 
+			       const char* pLine);
 
 /**
  * HSET device enumeration notification.
@@ -149,7 +149,7 @@ typedef void (*MUSB_pfHsetLog)(MUSB_HsetPort hPort,
  * @see #MUSB_HsetPortStart
  */
 typedef void (*MUSB_pfHsetNewDevice)(MUSB_HsetPort hPort,
-                                     const MUSB_HsetDeviceInfo *pDeviceInfo);
+				     const MUSB_HsetDeviceInfo* pDeviceInfo);
 
 /************************ HSET FUNCTIONS **************************/
 
@@ -161,10 +161,10 @@ typedef void (*MUSB_pfHsetNewDevice)(MUSB_HsetPort hPort,
  * @param pfNewDevice device enumeration notification callback
  * @return non-NULL HSET port handle on success; NULL on failure
  */
-extern MUSB_HsetPort MUSB_HsetPortStart(MUSB_Port *pPort,
-                                        MUSB_pfHsetStatus pfStatus,
-                                        MUSB_pfHsetLog pfLog,
-                                        MUSB_pfHsetNewDevice pfNewDevice);
+extern MUSB_HsetPort MUSB_HsetPortStart(MUSB_Port* pPort, 
+					MUSB_pfHsetStatus pfStatus,
+					MUSB_pfHsetLog pfLog,
+					MUSB_pfHsetNewDevice pfNewDevice);
 
 /**
  * Stop HSET on a port.

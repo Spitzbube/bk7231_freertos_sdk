@@ -14,11 +14,15 @@
  * MUSBMicroSW host-specific functionality.
  * $Revision: 1.50 $
  */
+
+#pragma thumb
+
 #include "mu_mem.h"
 #include "mu_impl.h"
 #include "mu_diag.h"
 #include "mu_cntlr.h"
 
+#define MUSB_PRT
 
 /**
  * Undefine this to avoid embedded HSET overheads
@@ -703,6 +707,14 @@ static uint32_t MGC_HostEnumerator(void *pParam, MUSB_ControlIrp *pIrp)
     pEnumData->bFatalRetries = 0;
 
     /* Decide what to do next based on what we just did */
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_HostEnumerator: pEnumData->bState=%d\r\n",
+				pEnumData->bState);
+		console_send_string(debug_string);
+	}
+#endif
     switch(pEnumData->bState)
     {
     case MGC_EnumStateGetDeviceZeroAddress:
@@ -857,6 +869,30 @@ static uint32_t MGC_HostEnumerator(void *pParam, MUSB_ControlIrp *pIrp)
                 }
             }
             /* dump basic device info */
+#if 1
+			{
+				extern char debug_string[];
+				sprintf(debug_string, "MGC_HostEnumerator: pEnumData->pDevice->DeviceDescriptor.bDeviceClass=0x%x\r\n",
+						pEnumData->pDevice->DeviceDescriptor.bDeviceClass);
+				console_send_string(debug_string);
+
+				sprintf(debug_string, "MGC_HostEnumerator: pEnumData->pDevice->DeviceDescriptor.bDeviceSubClass=0x%x\r\n",
+						pEnumData->pDevice->DeviceDescriptor.bDeviceSubClass);
+				console_send_string(debug_string);
+
+				sprintf(debug_string, "MGC_HostEnumerator: pEnumData->pDevice->DeviceDescriptor.idVendor=0x%x\r\n",
+						pEnumData->pDevice->DeviceDescriptor.idVendor);
+				console_send_string(debug_string);
+
+				sprintf(debug_string, "MGC_HostEnumerator: pEnumData->pDevice->DeviceDescriptor.idProduct=0x%x\r\n",
+						pEnumData->pDevice->DeviceDescriptor.idProduct);
+				console_send_string(debug_string);
+
+				sprintf(debug_string, "MGC_HostEnumerator: pEnumData->pDevice->DeviceDescriptor.bNumConfigurations=0x%x\r\n",
+						pEnumData->pDevice->DeviceDescriptor.bNumConfigurations);
+				console_send_string(debug_string);
+			}
+#endif
             if(pDriver)
             {
                 MUSB_PRT("Found driver for device revision = %x\r\n", pEnumData->pDevice->DeviceDescriptor.bcdDevice);
@@ -1080,7 +1116,7 @@ uint8_t MGC_HostDestroy(MGC_Port *pPort)
     return TRUE;
 }
 
-#ifdef MUSB_HUB
+#if 1//def MUSB_HUB
 uint32_t MUSB_EnumerateDevice(MUSB_Device *pHubDevice, uint8_t bHubPort,
                               uint8_t bSpeed, MUSB_pfHubEnumerationComplete pfHubEnumerationComplete)
 {
@@ -1097,6 +1133,15 @@ uint32_t MUSB_EnumerateDevice(MUSB_Device *pHubDevice, uint8_t bHubPort,
 
     if(bAddress)
     {
+#if 1
+		{
+			extern char debug_string[];
+			sprintf(debug_string, "MUSB_EnumerateDevice: bHubPort=%d, bAddress=%d\r\n",
+					bHubPort, bAddress);
+			console_send_string(debug_string);
+		}
+#endif
+
         if(MGC_EnumStateIdle != pEnumData->bState)
         {
             dwStatus = MUSB_STATUS_ENDPOINT_BUSY;
@@ -1737,7 +1782,7 @@ static uint32_t MGC_ComputeBandwidth(MGC_BusTimeInfo *pBusTimeInfo,
 static uint8_t MGC_CommitBandwidth(MGC_Port *pPort, MGC_Pipe *pPipe,
                                    const MUSB_DeviceEndpoint *pRemoteEnd)
 {
-#ifdef MUSB_HUB
+#if 1//def MUSB_HUB
     MGC_Device *pImplDevice;
 #endif
     MGC_Schedule *pSchedule;
@@ -1748,7 +1793,7 @@ static uint8_t MGC_CommitBandwidth(MGC_Port *pPort, MGC_Pipe *pPipe,
     MGC_BusTimeInfo *pLocalBusTimeInfo = NULL;
     uint16_t wDuration = 1;
     uint8_t bOk = FALSE;
-#ifdef MUSB_HUB
+#if 1//def MUSB_HUB
     const MUSB_Device *pDevice = pRemoteEnd->pDevice;
     MGC_ScheduleSlot *pLocalSlot = NULL;
 #endif
@@ -1818,7 +1863,7 @@ static uint8_t MGC_CommitBandwidth(MGC_Port *pPort, MGC_Pipe *pPipe,
         if(pSlot)
         {
             bOk = TRUE;
-#ifdef MUSB_HUB
+#if 1 //def MUSB_HUB
             if(pDevice->pParentUsbDevice)
             {
                 pImplDevice = (MGC_Device *)pDevice->pParentUsbDevice->pPrivateData;
@@ -1880,7 +1925,7 @@ static uint8_t MGC_CommitBandwidth(MGC_Port *pPort, MGC_Pipe *pPipe,
 /*
  * Open a pipe
  */
-MUSB_PipePtr MUSB_OpenPipe(MUSB_BusHandle hBus,
+MUSB_Pipe/*Ptr*/ MUSB_OpenPipe(MUSB_BusHandle hBus,
                            const MUSB_DeviceEndpoint *pRemoteEnd,
                            MUSB_EndpointResource *pEndpointResource)
 {
@@ -1981,7 +2026,7 @@ MUSB_PipePtr MUSB_OpenPipe(MUSB_BusHandle hBus,
 /*
  * Close a pipe
  */
-uint32_t MUSB_ClosePipe(MUSB_PipePtr hPipe)
+uint32_t MUSB_ClosePipe(MUSB_Pipe/*Ptr*/ hPipe)
 {
     uint8_t bDirection;
     uint8_t bIsTx;
@@ -2041,9 +2086,16 @@ uint32_t MUSB_ClosePipe(MUSB_PipePtr hPipe)
 /*
  * Start a single control transfer
  */
+/* 234786c4 / - complete */
 uint32_t MUSB_StartControlTransfer(MUSB_Port *pPort, MUSB_ControlIrp *pIrp)
 {
     uint32_t status = MUSB_STATUS_NO_RESOURCES;
+
+    if ((pPort == NULL) || (pIrp == NULL) || (pPort->pPrivateData == NULL))
+    {
+    	return 0xa8;
+    }
+
     MGC_Port *pImplPort = (MGC_Port *)pPort->pPrivateData;
     MUSB_SystemServices *pServices = pImplPort->pController->pSystemServices;
     MGC_EndpointResource *pEnd = NULL;
@@ -2068,7 +2120,9 @@ uint32_t MUSB_StartControlTransfer(MUSB_Port *pPort, MUSB_ControlIrp *pIrp)
             {
                 pEnd->wPacketSize = 8;
             }
+#if 0
             if (pImplPort->pfProgramStartTransmit)
+#endif
             {
                 status = pImplPort->pfProgramStartTransmit(pImplPort, pEnd,
                          pIrp->pOutBuffer, 8, pIrp);
@@ -2087,6 +2141,8 @@ uint32_t MUSB_StartControlTransfer(MUSB_Port *pPort, MUSB_ControlIrp *pIrp)
 
     return status;
 }
+
+#if 0
 
 /*
  * Cancel a pending control transfer
@@ -2164,6 +2220,8 @@ uint32_t MUSB_AdjustIsochTransfer(
 }
 #endif
 
+#endif
+
 static void MGC_DriverTimerExpired(void *pControllerPrivateData)
 {
     MGC_Controller *pController = (MGC_Controller *)pControllerPrivateData;
@@ -2201,6 +2259,8 @@ uint32_t MUSB_ArmTimer(MUSB_BusHandle hBus, MUSB_DeviceDriver *pDriver,
     return bOk ? 0 : MUSB_STATUS_NO_RESOURCES;
 }
 
+#if 0
+
 uint32_t MUSB_CancelTimer(MUSB_BusHandle hBus,
                           MUSB_DeviceDriver *pDriver, uint8_t bTimerIndex)
 {
@@ -2227,5 +2287,7 @@ uint32_t MGC_HostSetMaxPower(MGC_Port *pPort, uint16_t wPower)
 #endif
     return MUSB_STATUS_UNSUPPORTED;
 }
+
+#endif
 
 #endif	/* host or OTG */

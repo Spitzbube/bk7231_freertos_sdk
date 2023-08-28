@@ -13,11 +13,13 @@
 #include "mu_cntlr.h"
 #include "mu_diag.h"
 #include "mu_mem.h"
-#include "include.h"
+//#include "include.h"
 
-#if CFG_USB
+#pragma thumb
 
-#ifdef MUSB_FDRC
+//#if CFG_USB
+
+#if 1//def MUSB_FDRC
 #include "mu_mdrpr.h"
 #endif
 
@@ -40,14 +42,18 @@ void MUSB_SetFsAhbDmaControllerFactory(MUSB_DmaControllerFactory *pFactory)
 #if defined(MUSB_HDRC) || defined(MUSB_MHDRC) || defined(MUSB_HSFC)
 #include "mu_hdrpr.h"
 #ifdef MUSB_DMA
-extern MUSB_DmaControllerFactory MUSB_HdrcDmaControllerFactory;
-static MUSB_DmaControllerFactory *MGC_pHdrcDmaControllerFactory = &MUSB_HdrcDmaControllerFactory;
+extern MUSB_DmaControllerFactory MUSB_HdrcDmaControllerFactory; //2349c020
+static MUSB_DmaControllerFactory *MGC_pHdrcDmaControllerFactory //234942b8 +4
+	= &MUSB_HdrcDmaControllerFactory;
+
+/* 23464720 / - complete */
 void MUSB_SetHsDmaControllerFactory(MUSB_DmaControllerFactory *pFactory)
 {
     MGC_pHdrcDmaControllerFactory = pFactory;
 }
 #endif
 #endif
+
 /***************************** TYPES ******************************/
 
 /**
@@ -62,23 +68,24 @@ void MUSB_SetHsDmaControllerFactory(MUSB_DmaControllerFactory *pFactory)
  */
 typedef struct
 {
-    MGC_Controller ControllerImpl;
-    MUSB_Controller Controller;
+    MGC_Controller ControllerImpl; //0
+    MUSB_Controller Controller; //0x30
 
-    MGC_Port PortImpl;
-    MUSB_Port Port;
+    MGC_Port PortImpl; //0x58
+    MUSB_Port Port; //0x2B0
+    //704 = 0x2C0
 } MGC_ControllerWrapper;
 
 /**************************** GLOBALS *****************************/
 
 /** Requirements for one 10-millisecond timer */
-static uint32_t MGC_aOneTimer10Ms[] = { 10 };
+static uint32_t MGC_aOneTimer10Ms[] = { 10 }; //234942bc +8
 
 /** List of all controllers */
-static MUSB_LinkedList MGC_ControllerList;
+static MUSB_LinkedList MGC_ControllerList; //238ce0f0
 
 /** Next controller index */
-static uint16_t MGC_iController = 0;
+static uint16_t MGC_iController = 0; //234942b4
 
 #if MUSB_DIAG > 0
 /** Diagnostic message buffer */
@@ -88,6 +95,8 @@ char MGC_DiagNumber[MGC_DIAG_NUM_SIZE];
 /** Diagnostic level */
 uint8_t MGC_bDiagLevel = MUSB_DIAG;
 #endif
+
+#if CFG_USB
 
 /*************************** FUNCTIONS ****************************/
 
@@ -100,6 +109,8 @@ void MUSB_SetDiagnosticLevel(uint8_t bLevel)
     MGC_bDiagLevel = bLevel;
 #endif
 }
+
+#endif
 
 static void MGC_ControllerInit(MGC_ControllerWrapper *pWrapper,
                                void *pControllerAddressIsr,
@@ -126,6 +137,8 @@ static void MGC_ControllerInit(MGC_ControllerWrapper *pWrapper,
     pWrapper->PortImpl.IsrOverhead.dwOverheadMax = 0L;
 #endif
 }
+
+#if CFG_USB
 
 static uint16_t MGC_DiscoverController(void *pBase)
 {
@@ -179,10 +192,13 @@ static uint16_t MGC_DiscoverController(void *pBase)
     return wType;
 }
 
+#endif
+
 /*
  * Instantiate a controller
  动态分配MGC_ControllerWrapper结构体，并返回结构体中成员变量Controller的地址
  */
+/* 23464728 / - complete */
 MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
                                     uint16_t wControllerType,
                                     void *pControllerAddressIsr,
@@ -198,27 +214,35 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
     MGC_EndpointResource *pEnd;
     MUSB_Controller *pResult = NULL;
     uint16_t wType = wControllerType;
-    static MGC_ControllerWrapper pWrapper;
-
-    MUSB_MemSet(&pWrapper, 0, sizeof(MGC_ControllerWrapper));
-    if(!MUSB_ListAppendItem(&MGC_ControllerList, &pWrapper, 0))
+    MGC_ControllerWrapper* pWrapper = MUSB_MemAlloc(sizeof(MGC_ControllerWrapper));
+    if (pWrapper != NULL)
     {
-    }
-    else
-    {
-        MGC_iController++;
+        MUSB_MemSet(pWrapper, 0, sizeof(MGC_ControllerWrapper));
+        if(!MUSB_ListAppendItem(&MGC_ControllerList, pWrapper, 0))
+        {
+            MUSB_MemFree(pWrapper);
+            pWrapper = NULL;
+        }
+        else
+        {
+            MGC_iController++;
+        }
     }
 
-    pWrapper.ControllerImpl.pUtils = pUtils;
+    if (pWrapper != 0)
+    {
+    pWrapper->ControllerImpl.pUtils = pUtils;
     /* common init */
-    MGC_ControllerInit(&pWrapper, pControllerAddressIsr,
+    MGC_ControllerInit(pWrapper, pControllerAddressIsr,
                        pControllerAddressBsr);
 
+#if 0
     /* discover controller type if not given */
     if(!wType)
     {
         wType = MGC_DiscoverController(pControllerAddressBsr);
     }
+#endif
 
     /* initialize data & dispatch table */
     switch(wType)
@@ -227,17 +251,17 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
     case MUSB_CONTROLLER_FDRC:
         MUSB_DIAG1(2, "Initializing FDRC at ", (uint32_t)pControllerAddressIsr, 16, 8);
         /* endpoint config discovery, etc. */
-        bOK = MGC_FdrcInit(&(pWrapper.PortImpl));
+        bOK = MGC_FdrcInit(&(pWrapper->PortImpl));
         /* fill info for system */
-        pWrapper.Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
-        pWrapper.Controller.wQueueItemSize = sizeof(MGC_BsrItem);
-        pWrapper.Controller.wTimerCount = 1;
-        pWrapper.Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
-        pWrapper.Controller.wLockCount = 17;
-        pWrapper.Controller.pfIsr = MGC_FdrcIsr;
-        pWrapper.Controller.pIsrParam = &(pWrapper.Controller);
-        pWrapper.Controller.pfBsr = MGC_DrcBsr;
-        pWrapper.Controller.pBsrParam = &(pWrapper.Port);
+        pWrapper->Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
+        pWrapper->Controller.wQueueItemSize = sizeof(MGC_BsrItem);
+        pWrapper->Controller.wTimerCount = 1;
+        pWrapper->Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
+        pWrapper->Controller.wLockCount = 17;
+        pWrapper->Controller.pfIsr = MGC_FdrcIsr;
+        pWrapper->Controller.pIsrParam = &(pWrapper->Controller);
+        pWrapper->Controller.pfBsr = MGC_DrcBsr;
+        pWrapper->Controller.pBsrParam = &(pWrapper->Port);
 
 #ifdef MUSB_DMA
         pWrapper->ControllerImpl.pDmaControllerFactory =
@@ -245,34 +269,34 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
 #endif
 
         /* fill functions for generic code */
-        pWrapper.ControllerImpl.pfProgramStartController = MGC_FdrcStart;
-        pWrapper.ControllerImpl.pfProgramStopController = MGC_FdrcStop;
-        pWrapper.ControllerImpl.pfDestroyController = MGC_FdrcDestroy;
-        pWrapper.ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
+        pWrapper->ControllerImpl.pfProgramStartController = MGC_FdrcStart;
+        pWrapper->ControllerImpl.pfProgramStopController = MGC_FdrcStop;
+        pWrapper->ControllerImpl.pfDestroyController = MGC_FdrcDestroy;
+        pWrapper->ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
 #if MUSB_DIAG > 0
-        pWrapper.ControllerImpl.pfDumpControllerState = MGC_FdrcDumpState;
-        pWrapper.ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
-        pWrapper.ControllerImpl.pfDumpLocalEndState = MGC_FdrcDumpEndpoint;
+        pWrapper->ControllerImpl.pfDumpControllerState = MGC_FdrcDumpState;
+        pWrapper->ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
+        pWrapper->ControllerImpl.pfDumpLocalEndState = MGC_FdrcDumpEndpoint;
 #endif	/* diagnostics enabled */
-        pWrapper.PortImpl.pfReadBusState = MGC_FdrcReadBusState;
-        pWrapper.PortImpl.pfProgramBusState = MGC_FdrcProgramBusState;
-        pWrapper.PortImpl.pfResetPort = MGC_DrcResetPort;
-        pWrapper.PortImpl.pfBindEndpoint = MGC_FdrcBindEndpoint;
-        pWrapper.PortImpl.pfProgramStartReceive = MGC_FdrcStartRx;
-        pWrapper.PortImpl.pfProgramStartTransmit = MGC_FdrcStartTx;
-        pWrapper.PortImpl.pfProgramFlushEndpoint = MGC_FdrcFlushEndpoint;
-        pWrapper.PortImpl.pfProgramHaltEndpoint = MGC_FdrcHaltEndpoint;
-        pWrapper.PortImpl.pfDefaultEndResponse = MGC_FdrcDefaultEndResponse;
-        pWrapper.PortImpl.pfServiceDefaultEnd = MGC_FdrcServiceDefaultEnd;
-        pWrapper.PortImpl.pfServiceReceiveReady = MGC_FdrcServiceReceiveReady;
-        pWrapper.PortImpl.pfServiceTransmitAvail = MGC_FdrcServiceTransmitAvail;
-        pWrapper.PortImpl.pfLoadFifo = MGC_FdrcLoadFifo;
-        pWrapper.PortImpl.pfUnloadFifo = MGC_FdrcUnloadFifo;
-        pWrapper.PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
-        pWrapper.PortImpl.pfDmaChannelStatusChanged = MGC_FdrcDmaChannelStatusChanged;
-        pWrapper.PortImpl.pfDynamicFifoLocation = MGC_FdrcDynamicFifoLocation;
-        pWrapper.Port.Type = MUSB_PORT_TYPE_OTG;
-        pWrapper.Port.Speed = MUSB_PORT_SPEED_FULL;
+        pWrapper->PortImpl.pfReadBusState = MGC_FdrcReadBusState;
+        pWrapper->PortImpl.pfProgramBusState = MGC_FdrcProgramBusState;
+        pWrapper->PortImpl.pfResetPort = MGC_DrcResetPort;
+        pWrapper->PortImpl.pfBindEndpoint = MGC_FdrcBindEndpoint;
+        pWrapper->PortImpl.pfProgramStartReceive = MGC_FdrcStartRx;
+        pWrapper->PortImpl.pfProgramStartTransmit = MGC_FdrcStartTx;
+        pWrapper->PortImpl.pfProgramFlushEndpoint = MGC_FdrcFlushEndpoint;
+        pWrapper->PortImpl.pfProgramHaltEndpoint = MGC_FdrcHaltEndpoint;
+        pWrapper->PortImpl.pfDefaultEndResponse = MGC_FdrcDefaultEndResponse;
+        pWrapper->PortImpl.pfServiceDefaultEnd = MGC_FdrcServiceDefaultEnd;
+        pWrapper->PortImpl.pfServiceReceiveReady = MGC_FdrcServiceReceiveReady;
+        pWrapper->PortImpl.pfServiceTransmitAvail = MGC_FdrcServiceTransmitAvail;
+        pWrapper->PortImpl.pfLoadFifo = MGC_FdrcLoadFifo;
+        pWrapper->PortImpl.pfUnloadFifo = MGC_FdrcUnloadFifo;
+        pWrapper->PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
+        pWrapper->PortImpl.pfDmaChannelStatusChanged = MGC_FdrcDmaChannelStatusChanged;
+        pWrapper->PortImpl.pfDynamicFifoLocation = MGC_FdrcDynamicFifoLocation;
+        pWrapper->Port.Type = MUSB_PORT_TYPE_OTG;
+        pWrapper->Port.Speed = MUSB_PORT_SPEED_FULL;
         break;
 #endif	/* FDRC */
 
@@ -285,15 +309,15 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
         pWrapper->PortImpl.bWantHighSpeed = TRUE;
 #endif
         /* fill info for system */
-        pWrapper.Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
-        pWrapper.Controller.wQueueItemSize = sizeof(MGC_BsrItem);
-        pWrapper.Controller.wTimerCount = 1;
-        pWrapper.Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
-        pWrapper.Controller.wLockCount = 17;
-        pWrapper.Controller.pfIsr = MGC_HdrcIsr;
-        pWrapper.Controller.pIsrParam = &(pWrapper->Controller);
-        pWrapper.Controller.pfBsr = MGC_DrcBsr;
-        pWrapper.Controller.pBsrParam = &(pWrapper->Port);
+        pWrapper->Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
+        pWrapper->Controller.wQueueItemSize = sizeof(MGC_BsrItem);
+        pWrapper->Controller.wTimerCount = 1;
+        pWrapper->Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
+        pWrapper->Controller.wLockCount = 17;
+        pWrapper->Controller.pfIsr = MGC_HdrcIsr;
+        pWrapper->Controller.pIsrParam = &(pWrapper->Controller);
+        pWrapper->Controller.pfBsr = MGC_DrcBsr;
+        pWrapper->Controller.pBsrParam = &(pWrapper->Port);
 
 #ifdef MUSB_DMA
         pWrapper->ControllerImpl.pDmaControllerFactory =
@@ -301,35 +325,35 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
 #endif
 
         /* fill functions for generic code */
-        pWrapper.ControllerImpl.pfProgramStartController = MGC_HdrcStart;
-        pWrapper.ControllerImpl.pfProgramStopController = MGC_HdrcStop;
-        pWrapper.ControllerImpl.pfDestroyController = MGC_HdrcDestroy;
-        pWrapper.ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
+        pWrapper->ControllerImpl.pfProgramStartController = MGC_HdrcStart;
+        pWrapper->ControllerImpl.pfProgramStopController = MGC_HdrcStop;
+        pWrapper->ControllerImpl.pfDestroyController = MGC_HdrcDestroy;
+        pWrapper->ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
 #if MUSB_DIAG > 0
-        pWrapper.ControllerImpl.pfDumpControllerState = MGC_HdrcDumpState;
-        pWrapper.ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
-        pWrapper.ControllerImpl.pfDumpLocalEndState = MGC_HdrcDumpEndpoint;
+        pWrapper->ControllerImpl.pfDumpControllerState = MGC_HdrcDumpState;
+        pWrapper->ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
+        pWrapper->ControllerImpl.pfDumpLocalEndState = MGC_HdrcDumpEndpoint;
 #endif	/* diagnostics enabled */
-        pWrapper.PortImpl.pfReadBusState = MGC_HdrcReadBusState;
-        pWrapper.PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
-        pWrapper.PortImpl.pfResetPort = MGC_DrcResetPort;
-        pWrapper.PortImpl.pfBindEndpoint = MGC_HdrcBindEndpoint;
-        pWrapper.PortImpl.pfProgramStartReceive = MGC_HdrcStartRx;
-        pWrapper.PortImpl.pfProgramStartTransmit = MGC_HdrcStartTx;
-        pWrapper.PortImpl.pfProgramFlushEndpoint = MGC_HdrcFlushEndpoint;
-        pWrapper.PortImpl.pfProgramHaltEndpoint = MGC_HdrcHaltEndpoint;
-        pWrapper.PortImpl.pfDefaultEndResponse = MGC_HdrcDefaultEndResponse;
-        pWrapper.PortImpl.pfServiceDefaultEnd = MGC_HdrcServiceDefaultEnd;
-        pWrapper.PortImpl.pfServiceReceiveReady = MGC_HdrcServiceReceiveReady;
-        pWrapper.PortImpl.pfServiceTransmitAvail = MGC_HdrcServiceTransmitAvail;
-        pWrapper.PortImpl.pfLoadFifo = MGC_HdrcLoadFifo;
-        pWrapper.PortImpl.pfUnloadFifo = MGC_HdrcUnloadFifo;
-        pWrapper.PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
-        pWrapper.PortImpl.pfDmaChannelStatusChanged = MGC_HdrcDmaChannelStatusChanged;
-        pWrapper.PortImpl.pfSetPortTestMode = MGC_HdrcSetPortTestMode;
-        pWrapper.PortImpl.pfDynamicFifoLocation = MGC_HdrcDynamicFifoLocation;
-        pWrapper.Port.Type = MUSB_PORT_TYPE_OTG;
-        pWrapper.Port.Speed = MUSB_PORT_SPEED_HIGH;
+        pWrapper->PortImpl.pfReadBusState = MGC_HdrcReadBusState;
+        pWrapper->PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
+        pWrapper->PortImpl.pfResetPort = MGC_DrcResetPort;
+        pWrapper->PortImpl.pfBindEndpoint = MGC_HdrcBindEndpoint;
+        pWrapper->PortImpl.pfProgramStartReceive = MGC_HdrcStartRx;
+        pWrapper->PortImpl.pfProgramStartTransmit = MGC_HdrcStartTx;
+        pWrapper->PortImpl.pfProgramFlushEndpoint = MGC_HdrcFlushEndpoint;
+        pWrapper->PortImpl.pfProgramHaltEndpoint = MGC_HdrcHaltEndpoint;
+        pWrapper->PortImpl.pfDefaultEndResponse = MGC_HdrcDefaultEndResponse;
+        pWrapper->PortImpl.pfServiceDefaultEnd = MGC_HdrcServiceDefaultEnd;
+        pWrapper->PortImpl.pfServiceReceiveReady = MGC_HdrcServiceReceiveReady;
+        pWrapper->PortImpl.pfServiceTransmitAvail = MGC_HdrcServiceTransmitAvail;
+        pWrapper->PortImpl.pfLoadFifo = MGC_HdrcLoadFifo;
+        pWrapper->PortImpl.pfUnloadFifo = MGC_HdrcUnloadFifo;
+        pWrapper->PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
+        pWrapper->PortImpl.pfDmaChannelStatusChanged = MGC_HdrcDmaChannelStatusChanged;
+        pWrapper->PortImpl.pfSetPortTestMode = MGC_HdrcSetPortTestMode;
+        pWrapper->PortImpl.pfDynamicFifoLocation = MGC_HdrcDynamicFifoLocation;
+        pWrapper->Port.Type = MUSB_PORT_TYPE_OTG;
+        pWrapper->Port.Speed = MUSB_PORT_SPEED_HIGH;
         break;
 #endif	/* HDRC */
 
@@ -337,61 +361,61 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
     case MUSB_CONTROLLER_MHDRC:
         MUSB_DIAG1(2, "Initializing MHDRC at ", (uint32_t)pControllerAddressIsr, 16, 8);
         /* endpoint config discovery, etc. */
-        bOK = MGC_MhdrcInit(&(pWrapper.PortImpl));
+        bOK = MGC_MhdrcInit(&(pWrapper->PortImpl));
 
 #ifdef MUSB_FORCE_FULLSPEED
-        pWrapper.PortImpl.bWantHighSpeed = FALSE;
+        pWrapper->PortImpl.bWantHighSpeed = FALSE;
 #else
-        pWrapper.PortImpl.bWantHighSpeed = TRUE;
+        pWrapper->PortImpl.bWantHighSpeed = TRUE;
 #endif
-        pWrapper.PortImpl.bIsMultipoint = FALSE; // TRUE wangzhilei
+        pWrapper->PortImpl.bIsMultipoint = TRUE;
 
         /* fill info for system */
-        pWrapper.Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
-        pWrapper.Controller.wQueueItemSize = sizeof(MGC_BsrItem);
-        pWrapper.Controller.wTimerCount = 1;
-        pWrapper.Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
-        pWrapper.Controller.wLockCount = 17;
-        pWrapper.Controller.pfIsr = MGC_HdrcIsr;
-        pWrapper.Controller.pIsrParam = &(pWrapper.Controller);
-        pWrapper.Controller.pfBsr = MGC_DrcBsr;
-        pWrapper.Controller.pBsrParam = &(pWrapper.Port);
+        pWrapper->Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 16;
+        pWrapper->Controller.wQueueItemSize = sizeof(MGC_BsrItem);
+        pWrapper->Controller.wTimerCount = 1;
+        pWrapper->Controller.adwTimerResolutions = MGC_aOneTimer10Ms;
+        pWrapper->Controller.wLockCount = 17;
+        pWrapper->Controller.pfIsr = MGC_HdrcIsr;
+        pWrapper->Controller.pIsrParam = &(pWrapper->Controller);
+        pWrapper->Controller.pfBsr = MGC_DrcBsr;
+        pWrapper->Controller.pBsrParam = &(pWrapper->Port);
 
 #ifdef MUSB_DMA
-        pWrapper.ControllerImpl.pDmaControllerFactory =
+        pWrapper->ControllerImpl.pDmaControllerFactory =
             MGC_pHdrcDmaControllerFactory;
 #endif
 
         /* fill functions for generic code */
-        pWrapper.ControllerImpl.pfProgramStartController = MGC_HdrcStart;
-        pWrapper.ControllerImpl.pfProgramStopController = MGC_HdrcStop;
-        pWrapper.ControllerImpl.pfDestroyController = MGC_HdrcDestroy;
-        pWrapper.ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
+        pWrapper->ControllerImpl.pfProgramStartController = MGC_HdrcStart;
+        pWrapper->ControllerImpl.pfProgramStopController = MGC_HdrcStop;
+        pWrapper->ControllerImpl.pfDestroyController = MGC_HdrcDestroy;
+        pWrapper->ControllerImpl.pfSetControllerHostPower = MGC_DrcSetHostPower;
 #if MUSB_DIAG > 0
-        pWrapper.ControllerImpl.pfDumpControllerState = MGC_MhdrcDumpState;
-        pWrapper.ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
-        pWrapper.ControllerImpl.pfDumpLocalEndState = MGC_MhdrcDumpEndpoint;
+        pWrapper->ControllerImpl.pfDumpControllerState = MGC_MhdrcDumpState;
+        pWrapper->ControllerImpl.pfDumpPipeState = MGC_DrcDumpPipe;
+        pWrapper->ControllerImpl.pfDumpLocalEndState = MGC_MhdrcDumpEndpoint;
 #endif	/* diagnostics enabled */
-        pWrapper.PortImpl.pfReadBusState = MGC_HdrcReadBusState;
-        pWrapper.PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
-        pWrapper.PortImpl.pfResetPort = MGC_DrcResetPort;
-        pWrapper.PortImpl.pfBindEndpoint = MGC_MhdrcBindEndpoint;
-        pWrapper.PortImpl.pfProgramStartReceive = MGC_MhdrcStartRx;
-        pWrapper.PortImpl.pfProgramStartTransmit = MGC_MhdrcStartTx;
-        pWrapper.PortImpl.pfProgramFlushEndpoint = MGC_HdrcFlushEndpoint;
-        pWrapper.PortImpl.pfProgramHaltEndpoint = MGC_HdrcHaltEndpoint;
-        pWrapper.PortImpl.pfDefaultEndResponse = MGC_HdrcDefaultEndResponse;
-        pWrapper.PortImpl.pfServiceDefaultEnd = MGC_HdrcServiceDefaultEnd;
-        pWrapper.PortImpl.pfServiceReceiveReady = MGC_HdrcServiceReceiveReady;
-        pWrapper.PortImpl.pfServiceTransmitAvail = MGC_HdrcServiceTransmitAvail;
-        pWrapper.PortImpl.pfLoadFifo = MGC_HdrcLoadFifo;
-        pWrapper.PortImpl.pfUnloadFifo = MGC_HdrcUnloadFifo;
-        pWrapper.PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
-        pWrapper.PortImpl.pfDmaChannelStatusChanged = MGC_HdrcDmaChannelStatusChanged;
-        pWrapper.PortImpl.pfSetPortTestMode = MGC_HdrcSetPortTestMode;
-        pWrapper.PortImpl.pfDynamicFifoLocation = MGC_HdrcDynamicFifoLocation;
-        pWrapper.Port.Type = MUSB_PORT_TYPE_OTG;
-        pWrapper.Port.Speed = MUSB_PORT_SPEED_HIGH;
+        pWrapper->PortImpl.pfReadBusState = MGC_HdrcReadBusState;
+        pWrapper->PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
+        pWrapper->PortImpl.pfResetPort = MGC_DrcResetPort;
+        pWrapper->PortImpl.pfBindEndpoint = MGC_MhdrcBindEndpoint;
+        pWrapper->PortImpl.pfProgramStartReceive = MGC_MhdrcStartRx;
+        pWrapper->PortImpl.pfProgramStartTransmit = MGC_MhdrcStartTx;
+        pWrapper->PortImpl.pfProgramFlushEndpoint = MGC_HdrcFlushEndpoint;
+        pWrapper->PortImpl.pfProgramHaltEndpoint = MGC_HdrcHaltEndpoint;
+        pWrapper->PortImpl.pfDefaultEndResponse = MGC_HdrcDefaultEndResponse;
+        pWrapper->PortImpl.pfServiceDefaultEnd = MGC_HdrcServiceDefaultEnd;
+        pWrapper->PortImpl.pfServiceReceiveReady = MGC_HdrcServiceReceiveReady;
+        pWrapper->PortImpl.pfServiceTransmitAvail = MGC_HdrcServiceTransmitAvail;
+        pWrapper->PortImpl.pfLoadFifo = MGC_HdrcLoadFifo;
+        pWrapper->PortImpl.pfUnloadFifo = MGC_HdrcUnloadFifo;
+        pWrapper->PortImpl.pfAcceptDevice = MGC_DrcAcceptDevice;
+        pWrapper->PortImpl.pfDmaChannelStatusChanged = MGC_HdrcDmaChannelStatusChanged;
+        pWrapper->PortImpl.pfSetPortTestMode = MGC_HdrcSetPortTestMode;
+        pWrapper->PortImpl.pfDynamicFifoLocation = MGC_HdrcDynamicFifoLocation;
+        pWrapper->Port.Type = MUSB_PORT_TYPE_OTG;
+        pWrapper->Port.Speed = MUSB_PORT_SPEED_HIGH;
         break;
 #endif	/* MHDRC */
 
@@ -401,56 +425,57 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
         /* endpoint config discovery, etc. */
         bOK = MGC_HsfcInit(&(pWrapper->PortImpl));
 #ifndef MUSB_FORCE_FULLSPEED
-        pWrapper.PortImpl.bWantHighSpeed = TRUE;
+        pWrapper->PortImpl.bWantHighSpeed = TRUE;
 #endif
         /* fill info for system */
-        pWrapper.Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 8;
-        pWrapper.Controller.wQueueItemSize = sizeof(MGC_BsrItem);
-        pWrapper.Controller.wTimerCount = 0;
-        pWrapper.Controller.adwTimerResolutions = NULL;
-        pWrapper.Controller.wLockCount = 17;
-        pWrapper.Controller.pfIsr = MGC_HsfcIsr;
-        pWrapper.Controller.pIsrParam = &(pWrapper->Controller);
-        pWrapper.Controller.pfBsr = MGC_FcBsr;
-        pWrapper.Controller.pBsrParam = &(pWrapper->Port);
+        pWrapper->Controller.wQueueLength = MUSB_IRP_QUEUE_LENGTH + 8;
+        pWrapper->Controller.wQueueItemSize = sizeof(MGC_BsrItem);
+        pWrapper->Controller.wTimerCount = 0;
+        pWrapper->Controller.adwTimerResolutions = NULL;
+        pWrapper->Controller.wLockCount = 17;
+        pWrapper->Controller.pfIsr = MGC_HsfcIsr;
+        pWrapper->Controller.pIsrParam = &(pWrapper->Controller);
+        pWrapper->Controller.pfBsr = MGC_FcBsr;
+        pWrapper->Controller.pBsrParam = &(pWrapper->Port);
 
 #ifdef MUSB_DMA
-        pWrapper.ControllerImpl.pDmaControllerFactory =
+        pWrapper->ControllerImpl.pDmaControllerFactory =
             MGC_pHdrcDmaControllerFactory;
 #endif
 
         /* fill functions for generic code */
-        pWrapper.ControllerImpl.pfProgramStartController = MGC_HsfcStart;
-        pWrapper.ControllerImpl.pfProgramStopController = MGC_HsfcStop;
-        pWrapper.ControllerImpl.pfDestroyController = MGC_HsfcDestroy;
+        pWrapper->ControllerImpl.pfProgramStartController = MGC_HsfcStart;
+        pWrapper->ControllerImpl.pfProgramStopController = MGC_HsfcStop;
+        pWrapper->ControllerImpl.pfDestroyController = MGC_HsfcDestroy;
 #if MUSB_DIAG > 0
-        pWrapper.ControllerImpl.pfDumpControllerState = MGC_HsfcDumpState;
-        pWrapper.ControllerImpl.pfDumpPipeState = MGC_FcDumpPipe;
-        pWrapper.ControllerImpl.pfDumpLocalEndState = MGC_HsfcDumpEndpoint;
+        pWrapper->ControllerImpl.pfDumpControllerState = MGC_HsfcDumpState;
+        pWrapper->ControllerImpl.pfDumpPipeState = MGC_FcDumpPipe;
+        pWrapper->ControllerImpl.pfDumpLocalEndState = MGC_HsfcDumpEndpoint;
 #endif	/* diagnostics enabled */
-        pWrapper.PortImpl.pfReadBusState = MGC_HdrcReadBusState;
-        pWrapper.PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
-        pWrapper.PortImpl.pfResetPort = MGC_FcResetPort;
-        pWrapper.PortImpl.pfBindEndpoint = MGC_HsfcBindEndpoint;
-        pWrapper.PortImpl.pfProgramStartReceive = MGC_HsfcStartRx;
-        pWrapper.PortImpl.pfProgramStartTransmit = MGC_HsfcStartTx;
-        pWrapper.PortImpl.pfProgramFlushEndpoint = MGC_HsfcFlushEndpoint;
-        pWrapper.PortImpl.pfProgramHaltEndpoint = MGC_HsfcHaltEndpoint;
-        pWrapper.PortImpl.pfDefaultEndResponse = MGC_HsfcDefaultEndResponse;
-        pWrapper.PortImpl.pfServiceDefaultEnd = MGC_HsfcServiceDefaultEnd;
-        pWrapper.PortImpl.pfServiceReceiveReady = MGC_HsfcServiceReceiveReady;
-        pWrapper.PortImpl.pfServiceTransmitAvail = MGC_HsfcServiceTransmitAvail;
-        pWrapper.PortImpl.pfLoadFifo = MGC_HsfcLoadFifo;
-        pWrapper.PortImpl.pfUnloadFifo = MGC_HsfcUnloadFifo;
-        pWrapper.PortImpl.pfAcceptDevice = NULL;
-        pWrapper.PortImpl.pfDmaChannelStatusChanged = MGC_HsfcDmaChannelStatusChanged;
-        pWrapper.PortImpl.pfSetPortTestMode = MGC_HsfcSetPortTestMode;
-        pWrapper.PortImpl.pfDynamicFifoLocation = MGC_HsfcDynamicFifoLocation;
-        pWrapper.Port.Type = MUSB_PORT_TYPE_FUNCTION;
-        pWrapper.Port.Speed = MUSB_PORT_SPEED_HIGH;
+        pWrapper->PortImpl.pfReadBusState = MGC_HdrcReadBusState;
+        pWrapper->PortImpl.pfProgramBusState = MGC_HdrcProgramBusState;
+        pWrapper->PortImpl.pfResetPort = MGC_FcResetPort;
+        pWrapper->PortImpl.pfBindEndpoint = MGC_HsfcBindEndpoint;
+        pWrapper->PortImpl.pfProgramStartReceive = MGC_HsfcStartRx;
+        pWrapper->PortImpl.pfProgramStartTransmit = MGC_HsfcStartTx;
+        pWrapper->PortImpl.pfProgramFlushEndpoint = MGC_HsfcFlushEndpoint;
+        pWrapper->PortImpl.pfProgramHaltEndpoint = MGC_HsfcHaltEndpoint;
+        pWrapper->PortImpl.pfDefaultEndResponse = MGC_HsfcDefaultEndResponse;
+        pWrapper->PortImpl.pfServiceDefaultEnd = MGC_HsfcServiceDefaultEnd;
+        pWrapper->PortImpl.pfServiceReceiveReady = MGC_HsfcServiceReceiveReady;
+        pWrapper->PortImpl.pfServiceTransmitAvail = MGC_HsfcServiceTransmitAvail;
+        pWrapper->PortImpl.pfLoadFifo = MGC_HsfcLoadFifo;
+        pWrapper->PortImpl.pfUnloadFifo = MGC_HsfcUnloadFifo;
+        pWrapper->PortImpl.pfAcceptDevice = NULL;
+        pWrapper->PortImpl.pfDmaChannelStatusChanged = MGC_HsfcDmaChannelStatusChanged;
+        pWrapper->PortImpl.pfSetPortTestMode = MGC_HsfcSetPortTestMode;
+        pWrapper->PortImpl.pfDynamicFifoLocation = MGC_HsfcDynamicFifoLocation;
+        pWrapper->Port.Type = MUSB_PORT_TYPE_FUNCTION;
+        pWrapper->Port.Speed = MUSB_PORT_SPEED_HIGH;
         break;
 #endif	/* HDRC */
     }	/* switch on controller type */
+    }
 
     if(bOK)
     {
@@ -483,9 +508,9 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
 #endif
 
         /* initialize IRP lists */
-        for(bEnd = 0; bEnd < pWrapper.PortImpl.bEndCount; bEnd++)
+        for(bEnd = 0; bEnd < pWrapper->PortImpl.bEndCount; bEnd++)
         {
-            pEnd = (MGC_EndpointResource *)MUSB_ArrayFetch(&(pWrapper.PortImpl.LocalEnds), bEnd);
+            pEnd = (MGC_EndpointResource *)MUSB_ArrayFetch(&(pWrapper->PortImpl.LocalEnds), bEnd);
             MUSB_ListInit(&(pEnd->TxIrpList));
             MUSB_ListInit(&(pEnd->RxIrpList));
         }
@@ -502,11 +527,13 @@ MUSB_Controller *MUSB_NewController(MUSB_SystemUtils *pUtils,
         }
 #endif
         /* ready */
-        pResult = &(pWrapper.Controller);
+        pResult = &(pWrapper->Controller);
     }
 
     return pResult;
 }
+
+#if CFG_USB
 
 /*
  * Set a controller's host-mode power delivery capability
@@ -531,9 +558,12 @@ uint32_t MUSB_SetControllerHostPower(MUSB_Controller *pController,
     return result;
 }
 
+#endif
+
 /*
  * Start (or restart) a controller
  */
+/* 234648b4 / - complete */
 uint32_t MUSB_StartController(MUSB_Controller *pController,
                               MUSB_SystemServices *pSystemServices
                              )
@@ -546,6 +576,7 @@ uint32_t MUSB_StartController(MUSB_Controller *pController,
     }
     if(pImpl)
     {
+        pImpl->pSystemServices = pSystemServices;
 #ifdef MUSB_DMA
         /* try to instantiate DMA controller */
         if(pImpl->pDmaControllerFactory)
@@ -562,19 +593,85 @@ uint32_t MUSB_StartController(MUSB_Controller *pController,
                 pImpl->pPort->pDmaController->pPrivateData);
         }
 #endif
-        pImpl->pSystemServices = pSystemServices;
         return pImpl->pfProgramStartController(pImpl);
     }
     return MUSB_STATUS_UNSUPPORTED;
 }
 
+/* 2346490c - complete */
+uint32_t MUSB_StopController(MUSB_Controller* pController)
+{
+#if 0
+	console_send_string("MUSB_StopController (todo.c): TODO\r\n");
+#endif
+
+	if ((pController != NULL) && (pController->pPrivateData != NULL))
+	{
+		MGC_Controller* pControllerImpl = pController->pPrivateData;
+		struct _MGC_Port* pPort = pControllerImpl->pPort;
+		MUSB_DmaController *pDmaController = pPort->pDmaController;
+		if (pDmaController != NULL)
+		{
+			(pDmaController->pfDmaStopController)(pDmaController->pPrivateData);
+		}
+
+		return (pControllerImpl->pfProgramStopController)(pControllerImpl);
+	}
+	else
+	{
+		return 0x84;
+	}
+}
+
+
+/* 23464938 - todo */
+uint32_t MUSB_DestroyController(MUSB_Controller* pController)
+{
+#if 0
+	console_send_string("sub_23464938 (todo.c): TODO\r\n");
+#endif
+
+	uint32_t res = 0xa8;
+
+	if (pController != NULL)
+	{
+		MGC_iController--;
+
+		MUSB_StopController(pController);
+
+		MGC_Controller* pControllerImpl = pController->pPrivateData;
+		if (pControllerImpl != NULL)
+		{
+			struct _MGC_Port* pPort = pControllerImpl->pPort;
+			MUSB_DmaController *pDmaController = pPort->pDmaController;
+			if (pDmaController != NULL)
+			{
+				(pControllerImpl->pDmaControllerFactory->pfDestroyDmaController)(pDmaController);
+			}
+
+			res = (pControllerImpl->pfDestroyController)(pControllerImpl);
+
+			MUSB_MemSet(pControllerImpl, 0, 704); //sizeof(MGC_Controller));
+			MUSB_MemFree(pControllerImpl);
+
+			MUSB_ListRemoveItem(&MGC_ControllerList, pControllerImpl);
+		}
+	}
+
+	return res;
+}
+
+#if 1//CFG_USB
+
 /* Discover the number of ports */
+/* 23464994 / - complete */
 uint16_t MUSB_CountPorts()
 {
     return MGC_iController;
 }
 
 /* Get a port */
+/* 2346499a / - complete */
 MUSB_Port *MUSB_GetPort(uint16_t index)
 {
     MUSB_Port *pResult = NULL;
@@ -623,6 +720,7 @@ uint32_t MUSB_GetBusFrame(MUSB_BusHandle hBus)
 /*
  * Implementation
  */
+/* 234649e8 / - complete */
 void MUSB_SuspendBus(MUSB_BusHandle hBus)
 {
     uint16_t wCount;
@@ -692,6 +790,8 @@ void MUSB_ResumeBus(MUSB_BusHandle hBus)
         }
     }
 }
+
+#if 0
 
 /*
  * If DMA controller present, get a channel (if not already) and
@@ -1130,5 +1230,8 @@ MGC_EndpointResource *MGC_AllocateDynamicFifo(MGC_Port *pPort,
     }
     return NULL;
 }
+
+#endif
+
 #endif /*CFG_USB*/
 // eof

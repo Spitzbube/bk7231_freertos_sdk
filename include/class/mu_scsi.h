@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW SCSI definitions.
- * $Revision: 1.9 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_MSD_SCSI_H__
@@ -49,13 +49,13 @@
 #define MGC_SCSI_WRITE_BUFFER	    0x3B
 #define MGC_SCSI_PREVENT_ALLOW_MED_REMOVE   0x1e
 #define MGC_SCSI_READ_BUFFER        0x3C
-#define MGC_SCSI_SEEK6              0x0B
+#define MGC_SCSI_SEEK6              0x0B 
 #define MGC_SCSI_SEEK10             0x2B
 #define MGC_SCSI_CHNGDEF            0x40
 #define MGC_SCSI_COMPARE            0x39
 #define MGC_SCSI_COPY               0x18
 #define MGC_SCSI_COPY_VERIFY        0x3A
-#define MGC_SCSI_LOG_SELECT         0x4C
+#define MGC_SCSI_LOG_SELECT         0x4C 
 #define MGC_SCSI_LOG_SENSE          0x4D
 #define MGC_SCSI_CMD_RECV_DIAGNOSTIC 0x1C
 

@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Generic HID Interface (GHI).
- * $Revision: 1.9 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_GHI_H__
@@ -20,7 +20,7 @@
 
 #include "mu_tools.h"
 
-/**
+/** 
  * Introduction to Generic HID Interface.
  * The functions herein can be implemented by an OS or application to allow
  * the Mentor USB HID driver to be hooked into the OS'
@@ -46,7 +46,7 @@
 
 /************************* GHI CONSTANTS **************************/
 
-/**
+/** 
  * MUSB_GhiItemType.
  * GHI item type.
  */
@@ -82,7 +82,7 @@ typedef enum
     MUSB_GHI_ITEM_COLLECTION_USAGE_MODIFIER
 } MUSB_GhiItemType;
 
-/**
+/** 
  * MUSB_GhiStatus.
  * GHI Operation Status.
  */
@@ -101,7 +101,7 @@ typedef enum
 /*************************** GHI TYPES ****************************/
 
 /** Handle created by the GHI implementation */
-typedef void *MUSB_GhiDeviceHandle;
+typedef void* MUSB_GhiDeviceHandle;
 
 struct _MUSB_GhiItemInfo;
 
@@ -155,20 +155,20 @@ struct _MUSB_GhiItemInfo;
  */
 struct _MUSB_GhiItemInfo
 {
-    const struct _MUSB_GhiItemInfo *pParentItem;
-    uint16_t wSize;
-    uint8_t bId;
-    uint8_t bRepeatCount;
-    MUSB_GhiItemType Type;
-    uint8_t bConstant;
-    uint8_t bVariable;
-    uint8_t bRelative;
-    uint8_t bWrap;
-    uint8_t bNonLinear;
-    uint8_t bPreferredState;
-    uint8_t bNullState;
-    uint8_t bVolatile;
-    uint8_t bBufferedBytes;
+	const struct _MUSB_GhiItemInfo* pParentItem;
+	uint16_t wSize;
+	uint8_t bId;
+	uint8_t bRepeatCount;
+	MUSB_GhiItemType Type;
+	uint8_t bConstant;
+	uint8_t bVariable;
+	uint8_t bRelative;
+	uint8_t bWrap;
+	uint8_t bNonLinear;
+	uint8_t bPreferredState;
+	uint8_t bNullState;
+	uint8_t bVolatile;
+	uint8_t bBufferedBytes;
 };
 
 /** Typename for _MUSB_GhiItemInfo */
@@ -180,36 +180,36 @@ typedef struct _MUSB_GhiItemInfo MUSB_GhiItemInfo;
  * A generic HID driver fills this with any information
  * it knows before calling MUSB_GhiAddDevice.
  * The HID report is parsed and "expanded" into individual items.
- *
+ * 
  * @field aInputItem array of input items
  * @field aOutputItem array of output items
  * @field aFeatureItem array of feature items
  * @field wInputItemCount how many input items are in the array
  * @field wOutputItemCount how many output items are in the array
  * @field wFeatureItemCount how many feature items are in the array
- *
+ * 
  * @field wLanguage USB language ID
- *
+ * 
  * @field wVendorId USB VID,
  * for the GHI implementation's use in generating a device name
- *
+ * 
  * @field wProductId USB PID,
  * for the GHI implementation's use in generating a device name
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the GHI implementation's use in generating a device name
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the GHI implementation's use in generating a device name
  */
 typedef struct
 {
-    const MUSB_GhiItemInfo *aInputItem;
-    const MUSB_GhiItemInfo *aOutputItem;
-    const MUSB_GhiItemInfo *aFeatureItem;
-    uint16_t wInputItemCount;
-    uint16_t wOutputItemCount;
-    uint16_t wFeatureItemCount;
+	const MUSB_GhiItemInfo* aInputItem;
+	const MUSB_GhiItemInfo* aOutputItem;
+	const MUSB_GhiItemInfo* aFeatureItem;
+	uint16_t wInputItemCount;
+	uint16_t wOutputItemCount;
+	uint16_t wFeatureItemCount;
     uint16_t wLanguage;
     uint16_t wVendorId;
     uint16_t wProductId;
@@ -221,26 +221,26 @@ typedef struct
  * Input report handler.
  * GHI implementations register this type of handler function
  * for being notified of input reports.
- * The handler may be called frequently,
+ * The handler may be called frequently, 
  * so it should not perform long-running operations.
  * @param hDevice a device handle as filled by a successful MUSB_GhiAddDevice
  * @param pInput input data, with each item's data aligned to a byte boundary
  * @param dwLength actual input data length, in bytes
  */
-typedef void (*MUSB_pfGhiInputReport)(MUSB_GhiDeviceHandle hDevice,
-                                      const uint8_t *pInput, uint32_t dwLength);
+typedef void (*MUSB_pfGhiInputReport)(MUSB_GhiDeviceHandle hDevice, 
+	const uint8_t* pInput, uint32_t dwLength);
 
 /**
  * Output completion handler.
  * GHI implementations register this type of handler function
  * for being notified of completion of output or feature reports.
- * The handler may be called frequently,
+ * The handler may be called frequently, 
  * so it should not perform long-running operations.
  * @param hDevice a device handle as filled by a successful MUSB_GhiAddDevice
  * @param dwLength actual output data length, in bytes
  */
-typedef void (*MUSB_pfGhiOutputComplete)(MUSB_GhiDeviceHandle hDevice,
-        uint32_t dwLength);
+typedef void (*MUSB_pfGhiOutputComplete)(MUSB_GhiDeviceHandle hDevice, 
+	uint32_t dwLength);
 
 /**
  * Set the input report handler for a device.
@@ -248,16 +248,16 @@ typedef void (*MUSB_pfGhiOutputComplete)(MUSB_GhiDeviceHandle hDevice,
  * @param pDeviceData pPrivateData from associated MUSB_GhiDevice
  * @param pfInputHandler pointer to input handler function
  */
-typedef void (*MUSB_pfGhiSetInputHandler)(void *pDeviceData,
-        MUSB_pfGhiInputReport pfInputHandler);
+typedef void (*MUSB_pfGhiSetInputHandler)(void* pDeviceData,
+	MUSB_pfGhiInputReport pfInputHandler);
 
 /**
  * Set the output completion handler for a device.
  * @param pDeviceData pPrivateData from associated MUSB_GhiDevice
  * @param pfOutputCompletionHandler pointer to input handler function
  */
-typedef void (*MUSB_pfGhiSetOutputCompletionHandler)(void *pDeviceData,
-        MUSB_pfGhiOutputComplete pfOutputCompletionHandler);
+typedef void (*MUSB_pfGhiSetOutputCompletionHandler)(void* pDeviceData,
+	MUSB_pfGhiOutputComplete pfOutputCompletionHandler);
 
 /**
  * Set output.
@@ -268,8 +268,8 @@ typedef void (*MUSB_pfGhiSetOutputCompletionHandler)(void *pDeviceData,
  * @param wLength maximum number of bytes to transfer
  * @return status code
  */
-typedef MUSB_GhiStatus (*MUSB_pfGhiGetInput)(void *pDeviceData,
-        uint8_t bReportId, uint8_t *pInputBuffer, uint16_t wLength);
+typedef MUSB_GhiStatus (*MUSB_pfGhiGetInput)(void* pDeviceData,
+    uint8_t bReportId, uint8_t* pInputBuffer, uint16_t wLength);
 
 /**
  * Set output.
@@ -281,8 +281,8 @@ typedef MUSB_GhiStatus (*MUSB_pfGhiGetInput)(void *pDeviceData,
  * @param wLength number of bytes to transfer
  * @return status code
  */
-typedef MUSB_GhiStatus (*MUSB_pfGhiSetOutput)(void *pDeviceData,
-        uint8_t bReportId, const uint8_t *pOutput, uint16_t wLength);
+typedef MUSB_GhiStatus (*MUSB_pfGhiSetOutput)(void* pDeviceData,
+    uint8_t bReportId, const uint8_t* pOutput, uint16_t wLength);
 
 /**
  * Set feature.
@@ -294,25 +294,25 @@ typedef MUSB_GhiStatus (*MUSB_pfGhiSetOutput)(void *pDeviceData,
  * @param wLength number of bytes to transfer
  * @return status code
  */
-typedef MUSB_GhiStatus (*MUSB_pfGhiSetFeature)(void *pDeviceData,
-        uint8_t bReportId, const uint8_t *pOutput, uint16_t wLength);
+typedef MUSB_GhiStatus (*MUSB_pfGhiSetFeature)(void* pDeviceData,
+    uint8_t bReportId, const uint8_t* pOutput, uint16_t wLength);
 
 /**
  * MUSB_GhiDevice.
  * Device driver callbacks.
- * @field pPrivateData device driver private data;
+ * @field pPrivateData device driver private data; 
  * not to be interpreted by the GHI implementation
  * @field pfSetInputHandler driver's service to set a device's input handler
  * @field pfGetInput driver's service to request an input report from device
  * @field pfSetOutput driver's service to perform a set-output to a device
  * @field pfSetFeature driver's service to perform a set-feature to a device
  */
-typedef struct
+typedef struct 
 {
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfGhiSetInputHandler pfSetInputHandler;
-    MUSB_pfGhiSetOutputCompletionHandler pfSetOutputCompletionHandler;
-    MUSB_pfGhiGetInput pfGetInput;
+	MUSB_pfGhiSetOutputCompletionHandler pfSetOutputCompletionHandler;
+	MUSB_pfGhiGetInput pfGetInput;
     MUSB_pfGhiSetOutput pfSetOutput;
     MUSB_pfGhiSetFeature pfSetFeature;
 } MUSB_GhiDevice;
@@ -324,11 +324,11 @@ typedef struct
  * A generic HID driver calls this to inform the GHI implementation
  * that a new device is being used.
  * The GHI implementation uses the device information to determine if
- * it can support the device,
+ * it can support the device, 
  * and prepare the system to accept position information from it.
- * Error messages on failure are the GHI implementation's responsibility,
+ * Error messages on failure are the GHI implementation's responsibility, 
  * since the error messaging mechanism is OS-dependent.
- *
+ * 
  * @param phDevice where to store a device handle on success
  * @param pInfo pointer to device information struct
  * @param pDevice pointer to struct with callbacks to access the device
@@ -336,14 +336,14 @@ typedef struct
  * @return MUSB_GHI_ERROR_UNSUPPORTED_DEVICE if the device cannot
  * be supported (e.g. not enough buttons)
  */
-extern MUSB_GhiStatus MUSB_GhiAddDevice(MUSB_GhiDeviceHandle *phDevice,
-                                        const MUSB_GhiDeviceInfo *pInfo, MUSB_GhiDevice *pDevice);
-
+extern MUSB_GhiStatus MUSB_GhiAddDevice(MUSB_GhiDeviceHandle* phDevice,
+	const MUSB_GhiDeviceInfo* pInfo, MUSB_GhiDevice* pDevice);
+	
 /**
  * A generic HID device was removed.
  * A generic HID driver calls this to inform the GHI implementation
  * that the device has been removed.
- * By this time, the driver will have closed the input pipe to the device
+ * By this time, the driver will have closed the input pipe to the device 
  * (and therefore stopped calling the implementation's input report handler).
  * @param hDevice a device handle as filled by a successful MUSB_GhiAddDevice
  */

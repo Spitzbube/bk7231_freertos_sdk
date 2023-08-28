@@ -20,6 +20,8 @@
 
 #include "mu_pippr.h"
 
+#define MUSB_PRT
+
 const uint8_t *MGC_FindDescriptor(const uint8_t *pBuffer,
                                   uint16_t wBufferLength,
                                   uint8_t bDescriptorType,
@@ -543,6 +545,8 @@ uint8_t MGC_StartNextIrp(MGC_Port *pPort, MGC_EndpointResource *pEnd,
     return bOk;
 }
 
+#if 0
+
 /*
  * Get whether a pipe is halted
  * Returns: TRUE if pipe is halted; FALSE otherwise
@@ -570,11 +574,13 @@ uint32_t MUSB_SetPipeHalt(MUSB_PipePtr hPipe, uint8_t bHalt)
                                         bIsIn ? MUSB_DIR_IN : 0, bHalt);
 }
 
+#endif
+
 /*
  * Flush the given pipe
  * Returns: 0 on success; error code on failure
  */
-uint32_t MUSB_FlushPipe(MUSB_PipePtr hPipe)
+uint32_t MUSB_FlushPipe(MUSB_Pipe hPipe)
 {
     MGC_Pipe *pPipe = (MGC_Pipe *)hPipe;
     MGC_Port *pPort = (MGC_Port *)pPipe->hSession;
@@ -683,6 +689,8 @@ uint32_t MUSB_StartTransfer(MUSB_Irp *pIrp)
 
     return status;
 }
+
+#if 0
 
 /*
  * Signal that new interrupt data is ready for transmission
@@ -861,3 +869,4 @@ uint32_t MUSB_CancelIsochTransfer(MUSB_IsochIrp *pIsochIrp)
 }
 #endif
 
+#endif

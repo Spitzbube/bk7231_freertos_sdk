@@ -14,12 +14,14 @@
  * Descriptor analysis library.
  * $Revision: 1.8 $
  */
-#include "include.h"
+//#include "include.h"
+
+#pragma thumb
 
 #include "mu_descs.h"
 #include "mu_arch.h"
 
-#if CFG_USB
+#if 1 //CFG_USB
 /*
  * Find an arbitrary descriptor
  */

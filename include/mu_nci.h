@@ -12,13 +12,13 @@
 
 /*
  * MUSB-MicroSW NCI (Network Communications Interface).
- * $Revision: 1.1 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_NCI_H__
 #define __MUSB_NCI_H__
 
-/**
+/** 
  * Introduction to Network Communications Interface.
  * The functions herein can be implemented by an OS to allow
  * the Mentor USB CDC/Ethernet driver to be hooked into the OS'
@@ -38,7 +38,7 @@
 
 #define MUSB_NCI_MAX_CONNECT_NAME 31
 
-/**
+/** 
  * MUSB_NciStatus.
  * NCI Operation Status.
  */
@@ -63,10 +63,10 @@ typedef enum
  */
 typedef struct
 {
-    uint32_t dwUpstreamBitRate;
-    uint32_t dwDownstreamBitRate;
-    uint16_t awConnectionName[MUSB_NCI_MAX_CONNECT_NAME + 1];
-    uint8_t bConnected;
+	uint32_t dwUpstreamBitRate;
+	uint32_t dwDownstreamBitRate;
+	uint16_t awConnectionName[MUSB_NCI_MAX_CONNECT_NAME+1];
+	uint8_t bConnected;
 } MUSB_NciConnectionInfo;
 
 /**
@@ -74,24 +74,24 @@ typedef struct
  * Information about an NCI port (a physical connection to the network).
  * A CDC/Ethernet device driver fills this with any information
  * it knows before calling MUSB_NciAddPort.
- *
+ * 
  * @field abMacAddress MAC address, MSB to LSB
- *
+ * 
  * @field wVendorId USB VID,
  * for the NCI implementation's use in generating a volume name
- *
+ * 
  * @field wProductId USB PID,
  * for the NCI implementation's use in generating a volume name
- *
+ * 
  * @field bcdDevice USB bcdDevice,
  * for the NCI implementation's use in generating a volume name
- *
- * @field bBusAddress USB device address,
+ * 
+ * @field bBusAddress USB device address, 
  * for the NCI implementation's use in generating a volume name
  */
 typedef struct
 {
-    uint16_t wMaxSegmentSize;
+	uint16_t wMaxSegmentSize;
     uint16_t wVendorId;
     uint16_t wProductId;
     uint16_t bcdDevice;
@@ -100,10 +100,10 @@ typedef struct
 } MUSB_NciPortInfo;
 
 /** Handle created by the NCI implementation */
-typedef void *MUSB_NciClientHandle;
+typedef void* MUSB_NciClientHandle;
 
 /** Port handle */
-typedef void *MUSB_NciPortHandle;
+typedef void* MUSB_NciPortHandle;
 
 /**
  * MUSB_NciRxBuffer.
@@ -116,10 +116,10 @@ typedef void *MUSB_NciPortHandle;
  */
 typedef struct
 {
-    void *hClient;
-    uint8_t *pBuffer;
-    uint32_t dwLength;
-    uint32_t dwUsedSize;
+	void* hClient;
+	uint8_t* pBuffer;
+	uint32_t dwLength;
+	uint32_t dwUsedSize;
 } MUSB_NciRxBuffer;
 
 /**
@@ -130,7 +130,7 @@ typedef struct
  * @param wActualBytes the actual number of bytes successfully sent
  */
 typedef void (*MUSB_pfNciSendComplete)(MUSB_NciClientHandle hClient,
-                                       uint16_t wActualBytes);
+	uint16_t wActualBytes);
 
 /**
  * Send a packet.
@@ -144,8 +144,8 @@ typedef void (*MUSB_pfNciSendComplete)(MUSB_NciClientHandle hClient,
  * got removed or unreadied somehow, an appropriate error should be returned
  * @see #MUSB_NciAddPort
  */
-typedef MUSB_NciStatus (*MUSB_pfNciSendPacket)(MUSB_NciPortHandle hPort,
-        uint8_t *pBuffer, uint16_t wLength, MUSB_pfNciSendComplete pfSendComplete);
+typedef MUSB_NciStatus (*MUSB_pfNciSendPacket)(MUSB_NciPortHandle hPort, 
+	uint8_t* pBuffer, uint16_t wLength, MUSB_pfNciSendComplete pfSendComplete);
 
 /**
  * Loan a buffer to the CDC/Ethernet driver for receiving packets.
@@ -162,8 +162,8 @@ typedef MUSB_NciStatus (*MUSB_pfNciSendPacket)(MUSB_NciPortHandle hPort,
  * @return MUSB_NCI_NO_MEMORY if the CDC/Ethernet driver could
  * not allocate memory necessary for managing the loaned buffer
  */
-typedef MUSB_NciStatus (*MUSB_pfNciLoanRxBuffer)(MUSB_NciPortHandle hPort,
-        MUSB_NciRxBuffer *pBuffer);
+typedef MUSB_NciStatus (*MUSB_pfNciLoanRxBuffer)(MUSB_NciPortHandle hPort, 
+	MUSB_NciRxBuffer* pBuffer);
 
 /**
  * Set enabled state.
@@ -173,8 +173,8 @@ typedef MUSB_NciStatus (*MUSB_pfNciLoanRxBuffer)(MUSB_NciPortHandle hPort,
  * got removed or unreadied somehow, an appropriate error should be returned
  * @see #MUSB_NciAddPort
  */
-typedef MUSB_NciStatus (*MUSB_pfNciSetEnabled)(MUSB_NciPortHandle hPort,
-        uint8_t bEnabled);
+typedef MUSB_NciStatus (*MUSB_pfNciSetEnabled)(MUSB_NciPortHandle hPort, 
+	uint8_t bEnabled);
 
 /**
  * MUSB_NciPortServices.
@@ -184,7 +184,7 @@ typedef MUSB_NciStatus (*MUSB_pfNciSetEnabled)(MUSB_NciPortHandle hPort,
  * @field pfLoanRxBuffer Rx buffer-loaning service
  * @field pfSetEnabled enable-state service
  */
-typedef struct
+typedef struct 
 {
     MUSB_NciPortHandle hPort;
     MUSB_pfNciSendPacket pfSendPacket;
@@ -192,20 +192,8 @@ typedef struct
     MUSB_pfNciSetEnabled pfSetEnabled;
 } MUSB_NciPortServices;
 
-typedef struct
-{
-    MUSB_NciPortInfo PortInfo;
-    MUSB_NciConnectionInfo ConnectionInfo;
-    MUSB_NciPortServices *pPortServices;
-    uint8_t aLocalMacAddr[6];
-    uint8_t aLocalIpAddr[4];
-    uint8_t aTargetMacAddr[6];
-    uint8_t aTargetIpAddr[4];
-    uint16_t wNumber;
-    uint8_t aBuffer[2048];
-} MGC_TestNciPort;
-
 /************************* NCI FUNCTIONS **************************/
+
 /**
  * Add an NCI port.
  * A CDC/Ethernet device driver calls this to inform the NCI implementation
@@ -218,19 +206,19 @@ typedef struct
  * If the implementation wishes to support zero-copy operation,
  * it should call the pfLoanBuffer service function to provide
  * the driver with storage for incoming packets.
- * Error messages on failure are the NCI implementation's responsibility,
+ * Error messages on failure are the NCI implementation's responsibility, 
  * since the error messaging mechanism is OS-dependent.
- *
+ * 
  * @param phClient where to store a client handle on success
  * @param pPortInfo pointer to port information struct
  * @param pConnectionInfo pointer to current connection information
  * @param pPortServices pointer to port services dispatch table
  * @return MUSB_NCI_SUCCESS on success; another code on failure
  */
-extern MUSB_NciStatus MUSB_NciAddPort(MUSB_NciClientHandle *phClient,
-                                      const MUSB_NciPortInfo *pPortInfo,
-                                      const MUSB_NciConnectionInfo *pConnectionInfo,
-                                      MUSB_NciPortServices *pPortServices);
+extern MUSB_NciStatus MUSB_NciAddPort(MUSB_NciClientHandle* phClient,
+    const MUSB_NciPortInfo* pPortInfo, 
+    const MUSB_NciConnectionInfo* pConnectionInfo, 
+    MUSB_NciPortServices* pPortServices);
 
 /**
  * An NCI port is connected to its network.
@@ -240,7 +228,7 @@ extern MUSB_NciStatus MUSB_NciAddPort(MUSB_NciClientHandle *phClient,
  * @param pConnectionInfo pointer to connection information
  */
 extern void MUSB_NciPortConnected(MUSB_NciClientHandle hClient,
-                                  const MUSB_NciConnectionInfo *pConnectionInfo);
+    const MUSB_NciConnectionInfo* pConnectionInfo);
 
 /**
  * An NCI port received a packet.
@@ -255,15 +243,15 @@ extern void MUSB_NciPortConnected(MUSB_NciClientHandle hClient,
  * therefore this segment is once again owned by it
  */
 extern void MUSB_NciPortPacketReceived(MUSB_NciClientHandle hClient,
-                                       uint8_t *pBuffer, uint16_t wLength, uint8_t bMustCopy);
+	uint8_t* pBuffer, uint16_t wLength, uint8_t bMustCopy);
 
 /**
  * The CDC/Ethernet driver is returning a loaned buffer.
  * @param hClient a client handle as filled by a successful MUSB_NciAddPort
  * @param pBuffer pointer to buffer-sharing struct
  */
-extern void MUSB_NciReturnBuffer(MUSB_NciClientHandle hClient,
-                                 MUSB_NciRxBuffer *pBuffer);
+extern void MUSB_NciReturnBuffer(MUSB_NciClientHandle hClient, 
+	MUSB_NciRxBuffer* pBuffer);
 
 /**
  * An NCI port is disconnected from its network.

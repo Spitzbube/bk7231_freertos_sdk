@@ -166,7 +166,7 @@ typedef struct
     MGC_pfMsdProtocolSendCmd pfSendCmd;
     MGC_pfMsdProtocolSetDeviceInfo pfSetDeviceInfo;
     MGC_pfMsdProtocolSetMediumInfo pfSetMediumInfo;
-    MGC_pfMsdProtocolSetReady pfSetReady;
+    MGC_pfMsdProtocolSetReady pfSetReady; //0x18
     MGC_pfMsdProtocolSetFormatProgress pfSetFormatProgress;
 } MGC_MsdProtocol;
 

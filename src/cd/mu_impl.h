@@ -444,20 +444,20 @@ typedef int (*MGC_pfDumpLocalEndState)(struct _MGC_Controller *,
  */
 typedef struct _MGC_Controller
 {
-    void *pControllerAddressIsr;
-    void *pControllerAddressIst;
-    MUSB_SystemUtils *pUtils;
-    MUSB_SystemServices *pSystemServices;
+    void *pControllerAddressIsr; //0
+    void *pControllerAddressIst; //4
+    MUSB_SystemUtils *pUtils; //8
+    MUSB_SystemServices *pSystemServices; //0xc
     void *pPrivateData;
-    struct _MGC_Port *pPort;
+    struct _MGC_Port *pPort; //0x14
 #ifdef MUSB_DMA
-    MUSB_DmaControllerFactory *pDmaControllerFactory;
+    MUSB_DmaControllerFactory *pDmaControllerFactory; //0x18
 #endif
 
-    MGC_pfProgramStartController pfProgramStartController;
-    MGC_pfProgramStopController pfProgramStopController;
-    MGC_pfDestroyController pfDestroyController;
-    MGC_pfSetControllerHostPower pfSetControllerHostPower;
+    MGC_pfProgramStartController pfProgramStartController; //0x1c
+    MGC_pfProgramStopController pfProgramStopController; //0x20
+    MGC_pfDestroyController pfDestroyController; //0x24
+    MGC_pfSetControllerHostPower pfSetControllerHostPower; //0x28
 
 #if MUSB_DIAG > 0
     MGC_pfDumpControllerState pfDumpControllerState;
@@ -798,18 +798,18 @@ typedef struct
  */
 typedef struct _MGC_Port
 {
-    MGC_Controller *pController;
-    MUSB_Port *pInterfacePort;
+    MGC_Controller *pController; //0
+    MUSB_Port *pInterfacePort; //4
     void *pPrivateData;
     MUSB_Array LocalEnds;
 
     /* NOTE: pfProgramBusState must act on these values: */
-    uint8_t bWantHighSpeed;
+    uint8_t bWantHighSpeed; //0x1c
     uint8_t bWantReset;
     uint8_t bWantSuspend;
     uint8_t bWantResume;
     uint8_t bFuncAddr;
-    uint8_t bWantSession;
+    uint8_t bWantSession; //0x21
     uint8_t bWantHost;
     uint8_t bWantTestMode;
     uint8_t bTestMode;
@@ -822,7 +822,7 @@ typedef struct _MGC_Port
     uint8_t bHasBulkCombine;
     uint8_t bHasHbIsoTx;
     uint8_t bHasHbIsoRx;
-    uint8_t bIsMultipoint;
+    uint8_t bIsMultipoint; //0x2a
     uint8_t bEndCount;
 
     /* NOTE: pfReadBusState must update these values: */
@@ -850,7 +850,7 @@ typedef struct _MGC_Port
     uint8_t bPad3;
 
 #ifdef MUSB_OTG
-    uint8_t bOtgState;
+    uint8_t bOtgState; //0x44
     uint8_t bRelinquish;
     uint8_t bIsHnpSupported;
     uint8_t bIsHnpAllowed;
@@ -862,15 +862,15 @@ typedef struct _MGC_Port
     MUSB_HostClient *pHostClient;
     MUSB_pfDriverTimerExpired pfDriverTimerExpired;
     void *pDriverTimerData;
-    MUSB_Device *pRootDevice;
-    MUSB_LinkedList ConnectedDeviceList;
+    MUSB_Device *pRootDevice;	//0x1B0???
+    MUSB_LinkedList ConnectedDeviceList; //0x1B4???
     MGC_Schedule Schedule;
     uint16_t wHostMaxPower;
     uint16_t wHostUsedPower;
 #endif	/* host or OTG */
 
 #if defined(MUSB_FUNCTION) || defined(MUSB_OTG)
-    MUSB_FunctionClient *pFunctionClient;
+    MUSB_FunctionClient *pFunctionClient; //0x1D8???
     const MUSB_ConfigurationDescriptor **apConfigDescriptors;
     const MUSB_ConfigurationDescriptor *pCurrentConfig;
     MGC_Pipe **apPipe;
@@ -901,27 +901,28 @@ typedef struct _MGC_Port
 #endif
 
 #ifdef MUSB_DMA
-    MUSB_DmaController *pDmaController;
+    MUSB_DmaController *pDmaController; //0x20C
 #endif
 
-    MGC_pfReadBusState pfReadBusState;
-    MGC_pfProgramBusState pfProgramBusState;
-    MGC_pfResetPort pfResetPort;
-    MGC_pfBindEndpoint pfBindEndpoint;
-    MGC_pfProgramStartReceive pfProgramStartReceive;
-    MGC_pfProgramStartTransmit pfProgramStartTransmit;
-    MGC_pfProgramFlushEndpoint pfProgramFlushEndpoint;
-    MGC_pfProgramHaltEndpoint pfProgramHaltEndpoint;
-    MGC_pfDefaultEndResponse pfDefaultEndResponse;
-    MGC_pfServiceDefaultEnd pfServiceDefaultEnd;
-    MGC_pfServiceTransmitAvail pfServiceTransmitAvail;
-    MGC_pfServiceReceiveReady pfServiceReceiveReady;
-    MGC_pfLoadFifo pfLoadFifo;
-    MGC_pfUnloadFifo pfUnloadFifo;
-    MGC_pfAcceptDevice pfAcceptDevice;
-    MUSB_pfDmaChannelStatusChanged pfDmaChannelStatusChanged;
-    MGC_pfSetPortTestMode pfSetPortTestMode;
-    MGC_pfDynamicFifoLocation pfDynamicFifoLocation;
+    MGC_pfReadBusState pfReadBusState; //0x210
+    MGC_pfProgramBusState pfProgramBusState; //0x214
+    MGC_pfResetPort pfResetPort; //0x218
+    MGC_pfBindEndpoint pfBindEndpoint; //0x21c
+    MGC_pfProgramStartReceive pfProgramStartReceive; //0x220
+    MGC_pfProgramStartTransmit pfProgramStartTransmit; //0x224
+    MGC_pfProgramFlushEndpoint pfProgramFlushEndpoint; //0x228
+    MGC_pfProgramHaltEndpoint pfProgramHaltEndpoint; //0x22c
+    MGC_pfDefaultEndResponse pfDefaultEndResponse; //0x230
+    MGC_pfServiceDefaultEnd pfServiceDefaultEnd; //0x234
+    MGC_pfServiceTransmitAvail pfServiceTransmitAvail; //0x238
+    MGC_pfServiceReceiveReady pfServiceReceiveReady; //0x23c
+    MGC_pfLoadFifo pfLoadFifo; //0x240
+    MGC_pfUnloadFifo pfUnloadFifo; //0x244
+    MGC_pfAcceptDevice pfAcceptDevice; //0x248
+    MUSB_pfDmaChannelStatusChanged pfDmaChannelStatusChanged; //0x24c
+    MGC_pfSetPortTestMode pfSetPortTestMode; //0x250
+    MGC_pfDynamicFifoLocation pfDynamicFifoLocation; //0x254
+    //0x258
 } MGC_Port;
 
 /*

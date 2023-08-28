@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW USB Driver System Interface (UDSI).
- * $Revision: 1.12 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_SYSTEM_H__
@@ -61,7 +61,7 @@
  * @return 0: interrupt processed; no need to wake IST
  * @return >0: number of IST work items queued; please wake IST
  */
-typedef int (*MUSB_pfControllerIsr)(void *);
+typedef int (*MUSB_pfControllerIsr)(void*);
 
 /**
  * Controller BSR (Background Service Routine).
@@ -72,7 +72,7 @@ typedef int (*MUSB_pfControllerIsr)(void *);
  *
  * @param 1 pBsrParam from MUSB_Controller
  */
-typedef uint32_t(*MUSB_pfControllerBsr)(void *);
+typedef void (*MUSB_pfControllerBsr)(void*);
 
 /**
  * Timer expiration callback.
@@ -81,28 +81,29 @@ typedef uint32_t(*MUSB_pfControllerBsr)(void *);
  * lock/unlock services.
  *
  * @param 1 pPrivateData from MUSB_Controller
+ * @param 2 index of timer (counting from 0)
  * @see #MUSB_pfLock
  * @see #MUSB_pfUnlock
  */
-typedef void (*MUSB_pfTimerExpired)(void *);
+typedef void (*MUSB_pfTimerExpired)(void*, uint16_t);
 
 /**
  * MUSB_Controller.
  * A controller instance.
  * This is returned by a controller initialization function,
- * and provides everything necessary for the system glue
+ * and provides everything necessary for the system glue 
  * to support the controller's operation.
  *
  * @field wVersion the controller fills this with its interface version,
  * so the System can check for compatibility
  *
- * @field pPrivateData controller's private data;
+ * @field pPrivateData controller's private data; 
  * not to be interpreted by the System
  *
  * @field wQueueLength the maximum number of items the controller requires
  * in the background message queue
  *
- * @field wQueueItemSize the size (in bytes) of each item
+ * @field wQueueItemSize the size (in bytes) of each item 
  * the controller will place in the background queue
  *
  * @field wTimerCount the number of timers required for the controller's operation;
@@ -111,7 +112,7 @@ typedef void (*MUSB_pfTimerExpired)(void *);
  * @field wLockCount the number of locks required for the controller's operation;
  * the System should reserve and/or prepare this many locks for the controller's use
  *
- * @field pfIsr the controller's ISR;
+ * @field pfIsr the controller's ISR; 
  * the System must call this upon interrupt receipt
  *
  * @field pIsrParam the parameter the System must pass to the ISR
@@ -123,17 +124,18 @@ typedef void (*MUSB_pfTimerExpired)(void *);
  */
 typedef struct
 {
-    uint16_t wVersion;
-    void *pPrivateData;
-    uint16_t wQueueLength;
-    uint16_t wQueueItemSize;
-    uint16_t wTimerCount;
-    const uint32_t *adwTimerResolutions;
-    uint16_t wLockCount;
-    MUSB_pfControllerIsr pfIsr;
-    void *pIsrParam;
-    MUSB_pfControllerBsr pfBsr;
-    void *pBsrParam;
+    uint16_t wVersion; //0
+    void* pPrivateData; //4
+    uint16_t wQueueLength; //8
+    uint16_t wQueueItemSize; //0xa
+    uint16_t wTimerCount; //0xc
+    const uint32_t* adwTimerResolutions; //0x10
+    uint16_t wLockCount; //0x14
+    MUSB_pfControllerIsr pfIsr; //0x18
+    void* pIsrParam; //0x1c
+    MUSB_pfControllerBsr pfBsr; //0x20
+    void* pBsrParam; //0x24
+    //0x28
 } MUSB_Controller;
 
 /**
@@ -150,11 +152,11 @@ typedef struct
  * @return TRUE on success
  * @return FALSE on failure (result would overflow buffer)
  */
-typedef uint8_t (*MUSB_pfMessageString)(char *, uint16_t, const char *);
+typedef uint8_t (*MUSB_pfMessageString)(char*, uint16_t, const char*);
 
 /**
  * Simplified snprintf.
- * A controller calls this to format a number and append
+ * A controller calls this to format a number and append 
  * the result to a message buffer.
  * Most platforms can use a very simple implemenation
  * using sprintf, strlen and strncat.
@@ -169,12 +171,12 @@ typedef uint8_t (*MUSB_pfMessageString)(char *, uint16_t, const char *);
  * @return TRUE on success
  * @return FALSE on failure (result would overflow buffer)
  */
-typedef uint8_t (*MUSB_pfMessageNumber)(char *, uint16_t, uint32_t,
-                                        uint8_t, uint8_t);
+typedef uint8_t (*MUSB_pfMessageNumber)(char*, uint16_t, uint32_t, 
+uint8_t, uint8_t);
 
 /**
  * Get high-resolution time.
- * If overhead timing measurement is enabled,
+ * If overhead timing measurement is enabled, 
  * a controller calls this to get the current absolute time
  * in some high-resolution unit like microseconds.
  * Naturally, it is expected that this counter will roll over frequently.
@@ -186,21 +188,21 @@ typedef uint32_t (*MUSB_pfGetTime)(void);
  * MUSB_SystemUtils.
  * System utilities for a controller.
  *
- * This is provided by System-specific code to support a controller's
+ * This is provided by System-specific code to support a controller's 
  * initialization and operation.
  *
  * @field wVersion the System fills this with its current interface version
  * so the controller can check for compatibility
  *
- * @field pfMessageString the function the controller should use to
+ * @field pfMessageString the function the controller should use to 
  * append a string to a message buffer
  * (usually in preparation for printing diagnostics)
  *
- * @field pfMessageNumber the function the controller should use to
+ * @field pfMessageNumber the function the controller should use to 
  * format and append a number to a message buffer
  * (usually in preparation for printing diagnostics)
  *
- * @field pfGetTime the function the controller should use to get
+ * @field pfGetTime the function the controller should use to get 
  * the current time in high-resolution units for timing statistics
  */
 typedef struct
@@ -213,7 +215,7 @@ typedef struct
 
 /**
  * Get address for DMA.
- * A controller calls this to get a bus address (for DMA)
+ * A controller calls this to get a bus address (for DMA) 
  * from a system address.
  *
  * @param 1 pPrivateData from MUSB_SystemServices
@@ -221,7 +223,7 @@ typedef struct
  *
  * @return bus address on success; NULL on failure
  */
-typedef void *(*MUSB_pfSystemToBusAddress)(void *, const void *);
+typedef void* (*MUSB_pfSystemToBusAddress)(void*, const void*);
 
 /**
  * Enqueue background task.
@@ -234,7 +236,7 @@ typedef void *(*MUSB_pfSystemToBusAddress)(void *, const void *);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfQueueBackgroundItem)(void *, const void *);
+typedef uint8_t (*MUSB_pfQueueBackgroundItem)(void*, const void*);
 
 /**
  * Dequeue background task.
@@ -247,7 +249,7 @@ typedef uint8_t (*MUSB_pfQueueBackgroundItem)(void *, const void *);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfDequeueBackgroundItem)(void *, void *);
+typedef uint8_t (*MUSB_pfDequeueBackgroundItem)(void*, void*);
 
 /**
  * Flush background queue.
@@ -255,7 +257,7 @@ typedef uint8_t (*MUSB_pfDequeueBackgroundItem)(void *, void *);
  *
  * @param 1 pPrivateData from MUSB_SystemServices
  */
-typedef void (*MUSB_pfFlushBackgroundQueue)(void *);
+typedef void (*MUSB_pfFlushBackgroundQueue)(void*);
 
 /**
  * Arm a timer.
@@ -269,8 +271,8 @@ typedef void (*MUSB_pfFlushBackgroundQueue)(void *);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfArmTimer)(void *, uint16_t, uint32_t, uint8_t,
-                                   MUSB_pfTimerExpired);
+typedef uint8_t (*MUSB_pfArmTimer)(void*, uint16_t, uint32_t, uint8_t, 
+				    MUSB_pfTimerExpired);
 
 /**
  * Disarm a timer.
@@ -281,7 +283,7 @@ typedef uint8_t (*MUSB_pfArmTimer)(void *, uint16_t, uint32_t, uint8_t,
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfCancelTimer)(void *, uint16_t);
+typedef uint8_t (*MUSB_pfCancelTimer)(void*, uint16_t);
 
 /**
  * Lock.
@@ -292,7 +294,7 @@ typedef uint8_t (*MUSB_pfCancelTimer)(void *, uint16_t);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfLock)(void *, uint16_t);
+typedef uint8_t (*MUSB_pfLock)(void*, uint16_t);
 
 /**
  * Unlock.
@@ -303,7 +305,7 @@ typedef uint8_t (*MUSB_pfLock)(void *, uint16_t);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfUnlock)(void *, uint16_t);
+typedef uint8_t (*MUSB_pfUnlock)(void*, uint16_t);
 
 /**
  * Print diagnostic.
@@ -314,7 +316,7 @@ typedef uint8_t (*MUSB_pfUnlock)(void *, uint16_t);
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfPrintDiag)(void *, const char *);
+typedef uint8_t (*MUSB_pfPrintDiag)(void*, const char*);
 
 /**
  * [OPTIONAL] A new power load is attached to the controller.
@@ -331,7 +333,7 @@ typedef uint8_t (*MUSB_pfPrintDiag)(void *, const char *);
  *
  * @param 1 pPrivateData from MUSB_SystemServices
  * @param 2 additional power load, in 2 mA units
- * @param 3 TRUE if the controller wishes to add the load;
+ * @param 3 TRUE if the controller wishes to add the load; 
  * FALSE if the load cannot be added due to power requirements
  * (in the latter case this call is informational and its
  * return value is not relevant)
@@ -341,8 +343,8 @@ typedef uint8_t (*MUSB_pfPrintDiag)(void *, const char *);
  * @return TRUE on success
  * @return FALSE on failure (causes the device to be rejected)
  */
-typedef uint8_t (*MUSB_pfNewPowerLoad)(void *, uint16_t, uint8_t,
-                                       const uint8_t *, uint8_t);
+typedef uint8_t (*MUSB_pfNewPowerLoad)(void*, uint16_t, uint8_t, 
+									   const uint8_t*, uint8_t);
 
 /**
  * [OPTIONAL] Remove a power load from the controller.
@@ -361,8 +363,8 @@ typedef uint8_t (*MUSB_pfNewPowerLoad)(void *, uint16_t, uint8_t,
  * @return TRUE on success
  * @return FALSE on failure
  */
-typedef uint8_t (*MUSB_pfRemovePowerLoad)(void *, uint16_t, uint8_t,
-        const uint8_t *, uint8_t);
+typedef uint8_t (*MUSB_pfRemovePowerLoad)(void*, uint16_t, uint8_t,
+										  const uint8_t*, uint8_t);
 
 /**
  * MUSB_SystemServices.
@@ -379,7 +381,7 @@ typedef uint8_t (*MUSB_pfRemovePowerLoad)(void *, uint16_t, uint8_t,
  *
  * @field pfQueueBackgroundItem function to add an item to the background queue
  *
- * @field pfDequeueBackgroundItem function to remove an item
+ * @field pfDequeueBackgroundItem function to remove an item 
  * from the background queue
  *
  * @field pfFlushBackgroundQueue function to flush the background queue
@@ -401,7 +403,7 @@ typedef uint8_t (*MUSB_pfRemovePowerLoad)(void *, uint16_t, uint8_t,
 typedef struct
 {
     uint16_t wVersion;
-    void *pPrivateData;
+    void* pPrivateData;
     MUSB_pfSystemToBusAddress pfSystemToBusAddress;
     MUSB_pfQueueBackgroundItem pfQueueBackgroundItem;
     MUSB_pfDequeueBackgroundItem pfDequeueBackgroundItem;
@@ -411,8 +413,8 @@ typedef struct
     MUSB_pfLock pfLock;
     MUSB_pfUnlock pfUnlock;
     MUSB_pfPrintDiag pfPrintDiag;
-    MUSB_pfNewPowerLoad pfNewPowerLoad;
-    MUSB_pfRemovePowerLoad pfRemovePowerLoad;
+	MUSB_pfNewPowerLoad pfNewPowerLoad;
+	MUSB_pfRemovePowerLoad pfRemovePowerLoad;
 } MUSB_SystemServices;
 
 /****************** SYSTEM INTERFACE FUNCTIONS ********************/
@@ -423,7 +425,7 @@ typedef struct
  * This is typically called by startup code, like the application
  * on a single-application system.
  * @param dwBsrPriority the priority to use for the UCD's BSR(s).
- * Run-time configuration is necessary to allow applications
+ * Run-time configuration is necessary to allow applications 
  * built on binary distributions to choose a workable priority scheme.
  * The interpretation and allowed range is necessarily system-specific,
  * so please consult the system-specific documentation for this information.
@@ -437,7 +439,7 @@ extern uint8_t MUSB_InitSystem(unsigned long dwBsrPriority);
  * @return TRUE on success
  * @return FALSE on failure (system-specific reasons)
  */
-//extern uint8_t MUSB_DestroySystem(void);
+extern uint8_t MUSB_DestroySystem(void);
 
 /**
  * Create a controller.
@@ -447,19 +449,19 @@ extern uint8_t MUSB_InitSystem(unsigned long dwBsrPriority);
  *
  * @param pUtils pointer to utilities provided by the System glue
  * @param wControllerType the controller type (0 to discover)
- * @param pControllerAddressIsr the address of the controller's registers
+ * @param pControllerAddressIsr the address of the controller's registers 
  * as seen by the ISR
- * @param pControllerAddressBsr the address of the controller's registers
+ * @param pControllerAddressBsr the address of the controller's registers 
  * as seen by the BSR
  *
  * @return a non-NULL instance on success
  */
-extern MUSB_Controller *MUSB_NewController(
-    MUSB_SystemUtils *pUtils,
+extern MUSB_Controller* MUSB_NewController(
+    MUSB_SystemUtils* pUtils,
     uint16_t wControllerType,
-    void *pControllerAddressIsr,
-    void *pControllerAddressBsr
-);
+    void* pControllerAddressIsr,
+    void* pControllerAddressBsr
+    );
 
 /**
  * [OPTIONAL] Set maximum host-mode power information.
@@ -468,7 +470,7 @@ extern MUSB_Controller *MUSB_NewController(
  * This may be called whenever the power capability
  * changes (e.g. if the host is battery-powered).
  * For battery-powered hosts, the system glue should use
- * the value projected in the near future rather than
+ * the value projected in the near future rather than 
  * the actual present value.
  * This gives the stack time to react, e.g. by
  * suspending and/or unconfiguring one or more devices.
@@ -479,8 +481,8 @@ extern MUSB_Controller *MUSB_NewController(
  *
  * @return status code
  */
-extern uint32_t MUSB_SetControllerHostPower(MUSB_Controller *pController,
-        uint16_t wPower);
+extern uint32_t MUSB_SetControllerHostPower(MUSB_Controller * pController,
+											uint16_t wPower);
 
 /**
  * Start (or restart) a controller.
@@ -492,9 +494,9 @@ extern uint32_t MUSB_SetControllerHostPower(MUSB_Controller *pController,
  *
  * @return status code
  */
-extern uint32_t MUSB_StartController(MUSB_Controller *pController,
-                                     MUSB_SystemServices *pSystemServices
-                                    );
+extern uint32_t MUSB_StartController(MUSB_Controller * pController, 
+				     MUSB_SystemServices * pSystemServices
+				     );
 
 /**
  * Stop a controller.
@@ -504,7 +506,7 @@ extern uint32_t MUSB_StartController(MUSB_Controller *pController,
  *
  * @return status code
  */
-//extern uint32_t MUSB_StopController(MUSB_Controller* pController);
+extern uint32_t MUSB_StopController(MUSB_Controller* pController);
 
 /**
  * Destroy a controller.
@@ -515,11 +517,11 @@ extern uint32_t MUSB_StartController(MUSB_Controller *pController,
  *
  * @return status code
  */
-//extern uint32_t MUSB_DestroyController(MUSB_Controller* pController);
+extern uint32_t MUSB_DestroyController(MUSB_Controller* pController);
 
 /**
  * Read a character from the console.
- * Read an ASCII/ISO-Latin-1 character from the console;
+ * Read an ASCII/ISO-Latin-1 character from the console; 
  * blocking until one is available.
  * The console may be implemented in many different ways,
  * including scripting, so no assumption of true interactivity should be made.

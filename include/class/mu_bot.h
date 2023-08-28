@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW Bulk-Only Transport (BOT) definitions.
- * $Revision: 1.7 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_MSD_BOT_H__
@@ -55,21 +55,21 @@
 #define MGC_MSD_BOT_CASE_Hi_lt_Di                7
 #define MGC_MSD_BOT_CASE_Hi_ne_Do                8
 #define MGC_MSD_BOT_CASE_Ho_gt_Dn                9
-#define MGC_MSD_BOT_CASE_Ho_ne_Di               10
+#define MGC_MSD_BOT_CASE_Ho_ne_Di               10 
 #define MGC_MSD_BOT_CASE_Ho_gt_Do               11
 #define MGC_MSD_BOT_CASE_Ho_eq_Do               12
 #define MGC_MSD_BOT_CASE_Ho_lt_Do               13
 #define MGC_MSD_BOT_CASECBW                     14
 #define MGC_MSD_BOT_CASE_ERROR                  15
 
-/* Transfer Buffer Length for the Client : This value should not be
+/* Transfer Buffer Length for the Client : This value should not be 
  * greater than (64*1024-1) i.e. max value should fit in 16 Bits
  */
 #define MGC_MSD_BOT_XFER_BUF_LEN                (16 * 1024)
 
 /* Data Transfer Length for different commands */
 #define MGC_MSD_BOT_FMT_CACP_LEN        12 /* Format Capacity */
-#define MGC_MSD_BOT_MODE_SEN_LEN        4  /* Mode Sense */
+#define MGC_MSD_BOT_MODE_SEN_LEN        4  /* Mode Sense */ 
 #define MGC_MSD_BOT_INQ_DATA_LEN        36 /* Inquiry */
 #define MGC_MSD_BOT_REQ_SENS_LEN        18 /* Request Sense */
 #define MGC_MSD_BOT_RD_CAPCY_LEN        8  /* Read Capacity */

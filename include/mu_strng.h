@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW buffer-overrun-safe micro-string library API.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_STRING_H__
@@ -29,33 +29,33 @@
  * FALSE to ignore case
  * @return 0 if strings are identical
  */
-extern int8_t MUSB_StringCompare(const char *pString1,
-                                 const char *pString2, uint8_t bCaseSensitive);
+extern int8_t MUSB_StringCompare(const char* pString1, 
+				 const char* pString2, uint8_t bCaseSensitive);
 
 /**
  * strncat-analogue.
  * Concatenate a string to the end of another.
- * @param pResult the NUL-terminated ASCII string serving as the
+ * @param pResult the NUL-terminated ASCII string serving as the 
  * first string and result buffer
  * @param wResultLength length of result buffer
  * @param pConcat NUL-terminated ASCII string to append
  * @return TRUE on success
  * @return FALSE on failure (result would overflow buffer)
  */
-extern uint8_t MUSB_StringConcat(char *pResult,
-                                 uint16_t wResultLength, const char *pConcat);
+extern uint8_t MUSB_StringConcat(char* pResult, 
+				 uint16_t wResultLength, const char* pConcat);
 
 /**
  * strstr-analogue.
  * Find the first occurence of a pattern in a string.
  * @param pString the NUL-terminated ASCII string in which to search
  * @param pPattern the NUL-terminated ASCII pattern for which to search
- * @param bCaseSensitive TRUE for case sensite letter comparison;
+ * @param bCaseSensitive TRUE for case sensite letter comparison; 
  * FALSE to ignore case
  * @return pointer to first occurence if found; NULL if not found
  */
-extern const char *MUSB_StringFind(const char *pString,
-                                   const char *pPattern, uint8_t bCaseSensitive);
+extern const char* MUSB_StringFind(const char* pString,
+				   const char* pPattern, uint8_t bCaseSensitive);
 
 /**
  * Integer-to-string.
@@ -69,17 +69,17 @@ extern const char *MUSB_StringFind(const char *pString,
  * @return TRUE on success
  * @return FALSE on failure (result would overflow buffer)
  */
-extern uint8_t MUSB_Stringize(char *pResult, uint16_t wResultLength,
-                              uint32_t dwNumber, uint8_t bBase,
-                              uint8_t bJustification);
-
+extern uint8_t MUSB_Stringize(char* pResult, uint16_t wResultLength, 
+			      uint32_t dwNumber, uint8_t bBase, 
+			      uint8_t bJustification);
+ 
 /**
  * strlen-analogue.
  * Return the length of a NUL-terminated ASCII string.
  * @param pString the NUL-terminated ASCII string
  * @return Length, in characters, of the string
  */
-extern uint16_t MUSB_StringLength(const char *pString);
+extern uint16_t MUSB_StringLength(const char* pString);
 
 /**
  * strtol-analogue.
@@ -91,7 +91,7 @@ extern uint16_t MUSB_StringLength(const char *pString);
  * from the string (i.e. leading 0x or 0X denotes base 16; 0 for octal, % for binary)
  * @return the number, or 0 on failure (on failure, pEnd==pString)
  */
-extern int32_t MUSB_StringParse(const char *pString, const char **pEnd,
-                                uint8_t bBase);
+extern int32_t MUSB_StringParse(const char* pString, const char** pEnd, 
+				uint8_t bBase);
 
 #endif	/* multiple inclusion protection */

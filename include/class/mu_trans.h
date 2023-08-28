@@ -15,7 +15,7 @@
 
 /*
  * MUSB-MicroSW "transport" test definitions.
- * $Revision: 1.6 $
+ * $Revision: 5874 $
  */
 
 #include "mu_dev.h"

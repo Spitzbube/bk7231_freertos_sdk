@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW SFF-8070i definitions.
- * $Revision: 1.3 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_MSD_SFF8070I_H__
@@ -137,10 +137,10 @@ typedef struct
 {
     uint8_t bOpcode;
     uint8_t bLun;
-    uint32_t dwLba;
-    uint8_t bReserved;
-    uint16_t wLength;
-    uint8_t abReserved[3];
+	uint32_t dwLba;
+	uint8_t bReserved;
+	uint16_t wLength;
+	uint8_t abReserved[3];
 } MGC_Sff8070iCommand;
 #include "mu_pkoff.h"
 
@@ -156,9 +156,9 @@ typedef struct
 {
     uint8_t bOpcode;
     uint8_t bLun;
-    uint32_t dwLba;
-    uint32_t dwLength;
-    uint8_t abReserved[2];
+	uint32_t dwLba;
+	uint32_t dwLength;
+	uint8_t abReserved[2];
 } MGC_Sff8070iCommandExt;
 #include "mu_pkoff.h"
 
@@ -185,7 +185,7 @@ typedef struct
     uint8_t abmFlags[3];
     char aVendorId[8];
     char aProductId[8];
-    char aProductRev[8];
+	char aProductRev[8];
 } MGC_Sff8070iInquiryData;
 #include "mu_pkoff.h"
 

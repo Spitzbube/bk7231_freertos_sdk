@@ -12,7 +12,7 @@
 
 /*
  * MUSB-MicroSW DSC (Digital Still Camera) definitions.
- * $Revision: 1.1 $
+ * $Revision: 5874 $
  */
 
 #ifndef __MUSB_DSC_H__
@@ -41,7 +41,7 @@
 /**
  * MGC_DscContainer.
  * Commands, data, responses and events use this header.
- * For commands, responses and events (on interrupt pipe),
+ * For commands, responses and events (on interrupt pipe), 
  * this is followed by 0 or more 4-byte parameters.
  * Otherwise the payload is data.
  * @field dwLength container length

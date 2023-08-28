@@ -15,17 +15,21 @@
  * command preparation)
  * $Revision: 1.25 $
  */
-#include "include.h"
+//#include "include.h"
+
+#pragma thumb
 
 #include "mu_cdi.h"
 #include "mu_mem.h"
-#include "mu_impl.h"
+//#include "mu_impl.h"
 #include "mu_descs.h"
 #include "mu_stdio.h"
 #include "mu_diag.h"
 #include "mu_hfi.h"
 #include "mu_scsi.h"
 #include "mu_mpcsi.h"
+
+#define MUSB_PRT
 
 /****************************** CONSTANTS ********************************/
 
@@ -89,7 +93,7 @@ typedef struct
 } MGC_ScsiCmdSetData;
 
 /******************************* FORWARDS ********************************/
-#if CFG_SUPPORT_MSD
+#if 1 //CFG_SUPPORT_MSD
 extern void MGC_StartupAppEvent(void);
 static void *MGC_ScsiCmdSetCreateInstance(uint8_t bLunCount);
 static void MGC_ScsiCmdSetDestroyInstance(void *pInstance);
@@ -155,6 +159,15 @@ static MGC_MsdCmdSet MGC_ScsiCmdSet =
 };
 
 /****************************** FUNCTIONS ********************************/
+
+/* 2347c120 - todo */
+void sub_2347c120()
+{
+	console_send_string("sub_2347c120 (todo.c): TODO\r\n");
+
+}
+
+
 MGC_MsdCmdSet *MGC_GetScsiCmdSet()
 {
     return &MGC_ScsiCmdSet;
@@ -238,6 +251,14 @@ uint32_t MGC_ScsiCmdComplete(void *pPrivateData,
      * 9. two READ_CAPACITY's
      * - it just goes on and on, with different repeats of the READ_CAPACITY and READ(10)
      */
+
+#if 1
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_ScsiCmdComplete\r\n");
+		console_send_string(debug_string);
+	}
+#endif
 
     if(pScsi->bError)
     {
