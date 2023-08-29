@@ -147,7 +147,7 @@ static uint8_t MGC_AsixConnect(void *pPrivateData,
 	pAsixDevice->threadSema = OSSemCreate(0);
 	pAsixDevice->pMBox = (void*) OSMboxCreate(0);
 
-	rtos_thread_create(MGC_AsixThread, pAsixDevice, &asixThreadStack[THREAD_STACK_SIZE_MGC_ASIX-1],
+	OSTaskCreateExt(MGC_AsixThread, pAsixDevice, &asixThreadStack[THREAD_STACK_SIZE_MGC_ASIX-1],
 			THREAD_PRIO_MGC_ASIX, THREAD_PRIO_MGC_ASIX,
 			asixThreadStack, THREAD_STACK_SIZE_MGC_ASIX, "MGC_ASIX", 0x03);
 
