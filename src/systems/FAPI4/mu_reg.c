@@ -25,6 +25,14 @@ uint8_t MGC_FAPI_ReadReg8(uint8_t* baseAddr, uint16_t offset)
 
 	reg_data = ((volatile uint32_t*)(baseAddr))[0];
 
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_ReadReg8: offset=0x%x, data=0x%x\r\n", offset, reg_data);
+		console_send_string(debug_string);
+	}
+#endif
+
 	FAMOS_LeaveCriticalSection(cpu_sr);
 
 	return reg_data;
@@ -44,6 +52,14 @@ uint16_t MGC_FAPI_ReadReg16 (uint8_t* baseAddr, uint16_t offset)
 	dma_SetUsbMode_LengthInput(1);
 
 	reg_data = ((volatile uint32_t*)(baseAddr))[0];
+
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_ReadReg16: offset=0x%x, data=0x%x\r\n", offset, reg_data);
+		console_send_string(debug_string);
+	}
+#endif
 
 	FAMOS_LeaveCriticalSection(cpu_sr);
 
@@ -69,6 +85,14 @@ uint32_t MGC_FAPI_ReadReg32 (uint8_t* baseAddr, uint16_t offset)
 
 	reg_data = ((volatile uint32_t*)(baseAddr))[0];
 
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_ReadReg32: offset=0x%x, data=0x%x\r\n", offset, reg_data);
+		console_send_string(debug_string);
+	}
+#endif
+
 	FAMOS_LeaveCriticalSection(cpu_sr);
 
 	return reg_data;
@@ -88,6 +112,14 @@ void MGC_FAPI_WriteReg8(uint8_t* baseAddr, uint16_t offset, uint8_t data)
 
 	((volatile uint32_t*)(baseAddr))[0] = data;
 
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_WriteReg8: offset=0x%x, data=0x%x\r\n", offset, data);
+		console_send_string(debug_string);
+	}
+#endif
+
 	FAMOS_LeaveCriticalSection(cpu_sr);
 }
 
@@ -104,6 +136,14 @@ void MGC_FAPI_WriteReg16 (uint8_t* baseAddr, uint16_t offset, uint16_t data)
 	dma_SetUsbMode_LengthInput(1);
 
 	((volatile uint32_t*)(baseAddr))[0] = data;
+
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_WriteReg16: offset=0x%x, data=0x%x\r\n", offset, data);
+		console_send_string(debug_string);
+	}
+#endif
 
 	FAMOS_LeaveCriticalSection(cpu_sr);
 }
@@ -125,6 +165,14 @@ void MGC_FAPI_WriteReg32 (uint8_t* baseAddr, uint16_t offset, uint32_t data)
 	dma_SetUsbMode_LengthInput(2);
 
 	((volatile uint32_t*)(baseAddr))[0] = data;
+
+#if 0
+	{
+		extern char debug_string[];
+		sprintf(debug_string, "MGC_FAPI_WriteReg32: offset=0x%x, data=0x%x\r\n", offset, data);
+		console_send_string(debug_string);
+	}
+#endif
 
 	FAMOS_LeaveCriticalSection(cpu_sr);
 }
