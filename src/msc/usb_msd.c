@@ -88,8 +88,8 @@ typedef struct
 
 Struct_235faa2c Data_235faa2c[4]; //235faa2c
 
-//23492c60
-void (*Data_23492c60)() = 0; //23492c60 +0
+//234c1174
+void (*Data_234c1174)() = 0; //234c1174 +0
 
 
 
@@ -232,9 +232,9 @@ MUSB_HfiStatus MUSB_HfiAddDevice(MUSB_HfiVolumeHandle *phVolume/*r6*/,
 		//loc_23439f02
 	}
 	//loc_23439f08
-	if (Data_23492c60 != 0)
+	if (Data_234c1174 != 0)
 	{
-		(Data_23492c60)(1, i);
+		(Data_234c1174)(1, i);
 	}
 
     return MUSB_HFI_SUCCESS;
@@ -284,9 +284,9 @@ void MUSB_HfiDeviceRemoved(MUSB_HfiVolumeHandle hVolume)
 			Data_235faa2c[i].Data_0xc = (void*) OSSemDel(Data_235faa2c[i].Data_0xc, 1, &err);
 			Data_235faa2c[i].Data_0x10 = (void*) OSSemDel(Data_235faa2c[i].Data_0x10, 1, &err);
 
-			if (Data_23492c60 != 0)
+			if (Data_234c1174 != 0)
 			{
-				(Data_23492c60)(1, i);
+				(Data_234c1174)(1, i);
 			}
 
 			break;
@@ -624,14 +624,14 @@ MUSB_HfiDevice* sub_2343a150(int a)
 }
 
 
-/* 2343a162 - complete */
-void sub_2343a162(void (*a)())
+/* 2344affa - complete */
+void sub_2344affa(void (*a)())
 {
 #if 0
-	console_send_string("sub_2343a162 (todo.c): TODO\r\n");
+	console_send_string("sub_2344affa (todo.c): TODO\r\n");
 #endif
 
-	Data_23492c60 = a;
+	Data_234c1174 = a;
 }
 
 
